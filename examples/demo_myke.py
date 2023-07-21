@@ -1,5 +1,6 @@
 from myke import task
 
+
 @task(root=True)
 def setup(log_level="info"):
     print(f"Log level: {log_level}")

@@ -1,13 +1,13 @@
 import pytest
 
-from trogon.schemas import (
+from argparse_tui.run_command import UserArgumentData, UserCommandData, UserOptionData
+from argparse_tui.schemas import (
     ArgumentSchema,
     CommandName,
     CommandSchema,
     MultiValueParamData,
     OptionSchema,
 )
-from trogon.run_command import UserCommandData, UserOptionData, UserArgumentData
 
 
 @pytest.fixture
@@ -51,10 +51,10 @@ def command_schema_with_subcommand(command_schema):
                     type=bool,
                     required=False,
                     default=MultiValueParamData([(False,)]),
-                )
+                ),
             ],
             arguments=[],
-        )
+        ),
     }
     return command_schema
 
@@ -98,7 +98,7 @@ def user_command_data_with_subcommand(user_command_data_no_subcommand):
                     name="--sub-option",
                     value=("True",),
                     option_schema=OptionSchema(name=["--sub-option"], type=bool),
-                )
+                ),
             ],
             arguments=[],
         ),

@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
-import sys
 import argparse
-
-from trogon.argparse import add_tui_argument, add_tui_command
-
+import sys
 from getpass import getpass
 from pprint import pprint
+
+from argparse_tui import add_tui_argument, add_tui_command
 
 
 def _print_args(command: str, **kwargs):
@@ -46,7 +45,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "--verbose", "-v", action="count", default=0, help="Increase verbosity level."
+        "--verbose",
+        "-v",
+        action="count",
+        default=0,
+        help="Increase verbosity level.",
     )
     parser.add_argument("--hidden-arg", help=argparse.SUPPRESS)
     parser.set_defaults(_func=root)
@@ -57,10 +60,16 @@ if __name__ == "__main__":
     sp_add.set_defaults(_func=add)
     sp_add.add_argument("task")
     sp_add.add_argument(
-        "--priority", "-p", default=1, help="Set task priority (default: 1)"
+        "--priority",
+        "-p",
+        default=1,
+        help="Set task priority (default: 1)",
     )
     sp_add.add_argument(
-        "--tags", "-t", action="append", help="Add tags to the task (repeatable)"
+        "--tags",
+        "-t",
+        action="append",
+        help="Add tags to the task (repeatable)",
     )
     sp_add.add_argument(
         "--extra",
@@ -71,7 +80,10 @@ if __name__ == "__main__":
         action="append",
     )
     sp_add.add_argument(
-        "--category", "-c", default="home", choices=["work", "home", "leisure"]
+        "--category",
+        "-c",
+        default="home",
+        choices=["work", "home", "leisure"],
     )
     sp_add.add_argument(
         "--labels",
@@ -95,7 +107,11 @@ if __name__ == "__main__":
     sp_list_tasks = subparsers.add_parser("list-tasks")
     sp_list_tasks.set_defaults(_func=list_tasks)
     if sys.version_info >= (3, 9):
-        sp_list_tasks.add_argument("--all", default=True, action=argparse.BooleanOptionalAction)
+        sp_list_tasks.add_argument(
+            "--all",
+            default=True,
+            action=argparse.BooleanOptionalAction,
+        )
     sp_list_tasks.add_argument("--completed", "-c", action="store_true")
 
     sp_cant_see_me = subparsers.add_parser("cant-see-me", description=argparse.SUPPRESS)
@@ -119,5 +135,5 @@ if __name__ == "__main__":
 
     # call matching function with parsed args
     parsed_args._func(
-        **{k: v for k, v in vars(parsed_args).items() if not k.startswith("_")}
+        **{k: v for k, v in vars(parsed_args).items() if not k.startswith("_")},
     )
