@@ -1,0 +1,5 @@
+APP_TITLE = "Argparse TUI"
+PACKAGE_NAME = "argparse_tui"
+TEXTUAL_URL = "https://github.com/textualize/textual"
+ORGANIZATION_NAME = "T"
+DEFAULT_COMMAND_NAME = "tui"
