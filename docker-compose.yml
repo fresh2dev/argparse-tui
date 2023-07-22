@@ -12,7 +12,7 @@ networks:
 
 services:
   app:
-    image: ${HB_IMAGE_REGISTRY:?}/${HB_IMAGE_OWNER:?}/${COMPOSE_PROJECT_NAME:?}-docs:${HB_IMAGE_TAG:?}
+    image: ${HB_IMAGE_REGISTRY:?}/${HB_IMAGE_OWNER:?}/${COMPOSE_PROJECT_NAME:?}:${HB_IMAGE_TAG:?}
     networks:
       - proxy
     healthcheck:
