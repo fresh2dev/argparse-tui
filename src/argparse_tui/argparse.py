@@ -241,6 +241,7 @@ def add_tui_argument(
         >>> from argparse_tui import add_tui_argument
         ...
         >>> parser = argparse.ArgumentParser()
+        ...
         >>> add_tui_argument(parser)
         ...
         >>> parser.print_usage()
@@ -262,7 +263,7 @@ def add_tui_argument(
 
 
 def add_tui_command(
-    parser: argparse.ArgumentParser | argparse._SubParsersAction,
+    parser: argparse.ArgumentParser,
     command: str = DEFAULT_COMMAND_NAME,
     help: str = "Open Textual UI.",
 ) -> None:
@@ -278,31 +279,21 @@ def add_tui_command(
         >>> from argparse_tui import add_tui_argument
         ...
         >>> parser = argparse.ArgumentParser()
+        >>> subparsers = parser.add_subparsers()
+        ...
         >>> add_tui_command(parser)
         ...
         >>> parser.print_usage()
         usage: __main__.py [-h] {tui} ...
-
-        >>> import argparse
-        >>> from argparse_tui import add_tui_argument
-        ...
-        >>> parser = argparse.ArgumentParser()
-        >>> subparsers = parser.add_subparsers()
-        >>> add_tui_command(subparsers)
-        ...
-        >>> parser.print_usage()
-        usage: __main__.py [-h] {tui} ...
     """
+
     subparsers: argparse._SubParsersAction
-    if isinstance(parser, argparse._SubParsersAction):
-        subparsers = parser
+    for action in parser._actions:
+        if isinstance(action, argparse._SubParsersAction):
+            subparsers = action
+            break
     else:
-        for action in parser._actions:
-            if isinstance(action, argparse._SubParsersAction):
-                subparsers = action
-                break
-        else:
-            subparsers = parser.add_subparsers()
+        subparsers = parser.add_subparsers()
 
     tui_parser = subparsers.add_parser(
         command,
