@@ -20,7 +20,6 @@ extra:
 nav:
   - Home: index.md
   - Articles:
-      - Examples: 'page/examples.ipynb'
       - 'page/related.md'
   - Reference: reference/
   - Changelog: changelog.md
