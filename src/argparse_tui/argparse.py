@@ -119,7 +119,7 @@ def introspect_argparse_parser(
                 1
                 if param.nargs in [None, "?"]
                 else -1
-                if param.nargs in ["+", "*"]
+                if param.nargs in ["+", "*", argparse.REMAINDER]
                 else int(param.nargs)
             )
             multi_value: bool = nargs < 0 or nargs > 1
