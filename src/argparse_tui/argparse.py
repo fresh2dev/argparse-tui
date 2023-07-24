@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 import sys
-from typing import Any, Type
+from typing import Any
 
 from .constants import DEFAULT_COMMAND_NAME
 from .schemas import ArgumentSchema, CommandName, CommandSchema, OptionSchema
@@ -11,7 +11,7 @@ from .tui import Tui
 
 def introspect_argparse_parser(
     parser: argparse.ArgumentParser,
-    cmd_ignorelist: list[str] | None = None,
+    cmd_ignorelist: list[argparse.ArgumentParser] | None = None,
 ) -> dict[CommandName, CommandSchema]:
     def process_command(
         cmd_name: CommandName,
@@ -28,7 +28,7 @@ def introspect_argparse_parser(
         )
 
         # this is specific to yapx.
-        param_types: dict[str, Type[Any]] | None = getattr(parser, "_dest_type", None)
+        param_types: dict[str, type[Any]] | None = getattr(parser, "_dest_type", None)
 
         for param in parser._actions:
             if isinstance(param, TuiAction) or argparse.SUPPRESS in [
@@ -51,7 +51,7 @@ def introspect_argparse_parser(
                         )
                 continue
 
-            param_type: Type[Any] | None = None
+            param_type: type[Any] | None = None
             if param_types:
                 param_type = param_types.get(param.dest, param.type)
 
@@ -171,8 +171,34 @@ def introspect_argparse_parser(
     return data
 
 
+def invoke_tui(
+    parser: argparse.ArgumentParser,
+    cmd_ignorelist: list[argparse.ArgumentParser] = None,
+    command_filter: str | None = None,
+):
+    """
+    Examples:
+        >>> import argparse
+        >>> from argparse_tui import invoke_tui
+        ...
+        >>> parser = argparse.ArgumentParser(prog="awesome-app")
+        >>> _ = parser.add_argument("--value")
+        ...
+        >>> invoke_tui(parser)  # doctest: +SKIP
+    """
+
+    if cmd_ignorelist is None:
+        cmd_ignorelist = [parser]
+
+    Tui(
+        introspect_argparse_parser(parser, cmd_ignorelist=cmd_ignorelist),
+        app_name=parser.prog,
+        command_filter=command_filter,
+    ).run()
+
+
 class TuiAction(argparse.Action):
-    """argparse Action that will analyze the parser and display a TUI.
+    """argparse `Action` that will analyze the parser and display a TUI.
 
     Examples:
         >>> import argparse
@@ -213,11 +239,7 @@ class TuiAction(argparse.Action):
             parser,
         )
 
-        Tui(
-            introspect_argparse_parser(root_parser, cmd_ignorelist=[parser]),
-            app_name=root_parser.prog,
-            command_filter=values,
-        ).run()
+        invoke_tui(root_parser, cmd_ignorelist=[parser], command_filter=values)
 
         parser.exit()
 
