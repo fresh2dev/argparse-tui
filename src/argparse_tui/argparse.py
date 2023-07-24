@@ -288,13 +288,15 @@ def add_tui_command(
     parser: argparse.ArgumentParser,
     command: str = DEFAULT_COMMAND_NAME,
     help: str = "Open Textual UI.",
-) -> None:
+    **kwargs: Any,
+) -> argparse._SubParsersAction:
     """
 
     Args:
         parser: the argparse parser
         command: name of the CLI command that will invoke the TUI (default=`tui`)
         help: help message for the argument
+        **kwargs: if subparsers do not already exist, create with these kwargs.
 
     Examples:
         >>> import argparse
@@ -303,19 +305,20 @@ def add_tui_command(
         >>> parser = argparse.ArgumentParser()
         >>> subparsers = parser.add_subparsers()
         ...
-        >>> add_tui_command(parser)
+        >>> _ = add_tui_command(parser)
         ...
         >>> parser.print_usage()
         usage: __main__.py [-h] {tui} ...
     """
 
     subparsers: argparse._SubParsersAction
-    for action in parser._actions:
-        if isinstance(action, argparse._SubParsersAction):
-            subparsers = action
-            break
+    if parser._subparsers is None:
+        subparsers = parser.add_subparsers(**kwargs)
     else:
-        subparsers = parser.add_subparsers()
+        for action in parser._actions:
+            if isinstance(action, argparse._SubParsersAction):
+                subparsers = action
+                break
 
     tui_parser = subparsers.add_parser(
         command,
@@ -330,3 +333,5 @@ def add_tui_command(
         default=None,
         help="Command filter",
     )
+
+    return subparsers
