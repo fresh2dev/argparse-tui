@@ -99,16 +99,6 @@ class UserCommandData:
     def _to_cli_args(self, redact_secret: bool = False):
         args = [self.name]
 
-        for argument in self.arguments:
-            this_arg_values = [
-                value for value in argument.value if value != ValueNotSupplied()
-            ]
-
-            if redact_secret and argument.argument_schema.secret:
-                args.extend([REDACTED_PLACEHOLDER] * len(this_arg_values))
-            else:
-                args.extend(this_arg_values)
-
         multiples = defaultdict(list)
         multiples_schemas: dict[str, OptionSchema] = {}
 
@@ -242,6 +232,16 @@ class UserCommandData:
                             args.extend([REDACTED_PLACEHOLDER] * len(value_data))
                         else:
                             args.extend(value_data)
+
+        for argument in self.arguments:
+            this_arg_values = [
+                value for value in argument.value if value != ValueNotSupplied()
+            ]
+
+            if redact_secret and argument.argument_schema.secret:
+                args.extend([REDACTED_PLACEHOLDER] * len(this_arg_values))
+            else:
+                args.extend(this_arg_values)
 
         if self.subcommand:
             args.extend(self.subcommand._to_cli_args(redact_secret=redact_secret))

@@ -107,18 +107,18 @@ def user_command_data_with_subcommand(user_command_data_no_subcommand):
 
 def test_to_cli_args_no_subcommand(user_command_data_no_subcommand):
     cli_args = user_command_data_no_subcommand.to_cli_args(True)
-    assert cli_args == ["test", "123", "--option1", "value1", "--option2", "42"]
+    assert cli_args == ["test", "--option1", "value1", "--option2", "42", "123"]
 
 
 def test_to_cli_args_with_subcommand(user_command_data_with_subcommand):
     cli_args = user_command_data_with_subcommand.to_cli_args(True)
     assert cli_args == [
         "test",
-        "123",
         "--option1",
         "value1",
         "--option2",
         "42",
+        "123",
         "sub",
         "--sub-option",
         "True",
@@ -128,7 +128,7 @@ def test_to_cli_args_with_subcommand(user_command_data_with_subcommand):
 def test_to_cli_string_no_subcommand(user_command_data_no_subcommand):
     cli_string = user_command_data_no_subcommand.to_cli_string(True)
 
-    assert cli_string.plain == "test 123 --option1 value1 --option2 42"
+    assert cli_string.plain == "test --option1 value1 --option2 42 123"
 
 
 def test_to_cli_string_with_subcommand(user_command_data_with_subcommand):
@@ -136,5 +136,5 @@ def test_to_cli_string_with_subcommand(user_command_data_with_subcommand):
 
     assert (
         cli_string.plain
-        == "test 123 --option1 value1 --option2 42 sub --sub-option True"
+        == "test --option1 value1 --option2 42 123 sub --sub-option True"
     )

@@ -37,7 +37,6 @@ This is a fork of the Textualize [Trogon TUI library](https://github.com/Textual
 - support ommission of hidden parameters and subcommands from the TUI
 - support the redaction of sensitive "secret" values
 - support for showing required prompts as read-only
-- positional arguments come before keyword arguments in the generated command
 - ability to join list arguments values like this: `-x 1 -x 2 -x 3` (default), or like this: `-x 1 2 3`
 - vim-friendly keybindings
 
