@@ -1,6 +1,6 @@
 # argparse-tui
 
-> Display your Python argparse CLI as a TUI.
+> Display your Python argparse parser in a TUI.
 
 | Links         |                                                      |
 |---------------|------------------------------------------------------|

@@ -7,7 +7,7 @@ name = "argparse-tui"
 authors = [
     {name = "Donald Mellenbruch", email = "hello@f2dv.com"},
 ]
-description = "Display your Python argparse CLI as a TUI."
+description = "Display your Python argparse parser in a TUI."
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.7"
