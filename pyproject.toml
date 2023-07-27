@@ -7,7 +7,7 @@ name = "argparse-tui"
 authors = [
     {name = "Donald Mellenbruch", email = "hello@f2dv.com"},
 ]
-description = "Display your Python argparse CLI as a TUI."
+description = "Display your Python argparse parser as a TUI."
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.7"
@@ -57,7 +57,7 @@ tests = [
 ]
 
 [project.urls]
-Homepage = "https://www.f2dv.com/code/r/argparse-tui/i"
+Homepage = "https://www.f2dv.com/r/argparse-tui"
 Repository = "https://www.github.com/fresh2dev/argparse-tui"
 Funding = "https://www.f2dv.com/fund"
 

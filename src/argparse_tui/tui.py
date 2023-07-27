@@ -124,6 +124,7 @@ class CommandBuilder(Screen):
         yield Footer()
 
     def action_close_and_run(self) -> None:
+        self.action_copy_command_string()
         self.app.post_run_command_redacted = self.command_data.to_cli_string()
         self.app.post_run_command = self.command_data.to_cli_args()
         self.app.execute_on_exit = True
@@ -139,17 +140,18 @@ class CommandBuilder(Screen):
             # if linux
         )
 
-        run(
-            cmd,
-            input=self.app_name
-            + " "
-            + " ".join(
-                shlex.quote(str(x))
-                for x in self.command_data.to_cli_args(redact_secret=True)
-            ),
-            text=True,
-            check=False,
-        )
+        with suppress(FileNotFoundError):
+            run(
+                cmd,
+                input=self.app_name
+                + " "
+                + " ".join(
+                    shlex.quote(str(x))
+                    for x in self.command_data.to_cli_args(redact_secret=True)
+                ),
+                text=True,
+                check=False,
+            )
 
     def action_exit(self) -> None:
         self.app.exit()
