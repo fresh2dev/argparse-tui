@@ -1,10 +1,10 @@
 # Changes here will be overwritten by Copier
-_commit: 4964f16
+_commit: da703ab
 _src_path: https://codeberg.org/Fresh2dev/copier-f2dv-project.git
 author_email: hello@f2dv.com
 author_name: Donald Mellenbruch
 ci_domain_name: lokalhost.net
-docs_url: https://www.f2dv.com/code/r/argparse-tui/i
+docs_url: https://www.f2dv.com/r/argparse-tui
 funding_url: https://www.f2dv.com/fund
 home_domain: f2dv.com
 home_page: https://www.f2dv.com
@@ -12,10 +12,10 @@ is_minimal: false
 is_python: true
 license_type: MIT
 package_name: argparse_tui
-project_description: Display your Python argparse parser in a TUI.
+project_description: Display your Python argparse parser as a TUI.
 project_name: argparse-tui
 python_version: '3.7'
-repo_mirror: https://www.f2dv.com/code/r/argparse-tui
+repo_mirror: https://www.f2dv.com/r/argparse-tui
 repo_name: fresh2dev/argparse-tui
 repo_owner: fresh2dev
 repo_url: https://www.github.com/fresh2dev/argparse-tui

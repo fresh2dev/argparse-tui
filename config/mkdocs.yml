@@ -1,6 +1,6 @@
 site_name: "argparse-tui"
 site_description: "argparse-tui Docs"
-site_url: !ENV [MKDOCS_SITE_URL, "https://www.f2dv.com/code/r/argparse-tui/i"]
+site_url: !ENV [MKDOCS_SITE_URL, "https://www.f2dv.com/r/argparse-tui"]
 repo_url: "https://www.github.com/fresh2dev/argparse-tui"
 repo_name: "fresh2dev/argparse-tui"
 edit_uri: "edit/main/docs"
@@ -26,8 +26,8 @@ nav:
   - License: license.md
   - Discussion: comments.md
   - '<- f2dv.com':
-    - '/blog': 'https://www.f2dv.com'
-    - '/code': 'https://www.f2dv.com/code/r/'
+    - '/home': 'https://www.f2dv.com'
+    - '/code': 'https://www.f2dv.com/projects'
     - '/fund': 'https://www.f2dv.com/fund'
 
 watch:
