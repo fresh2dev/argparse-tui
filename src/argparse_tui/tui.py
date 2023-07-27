@@ -139,17 +139,18 @@ class CommandBuilder(Screen):
             # if linux
         )
 
-        run(
-            cmd,
-            input=self.app_name
-            + " "
-            + " ".join(
-                shlex.quote(str(x))
-                for x in self.command_data.to_cli_args(redact_secret=True)
-            ),
-            text=True,
-            check=False,
-        )
+        with suppress(FileNotFoundError):
+            run(
+                cmd,
+                input=self.app_name
+                + " "
+                + " ".join(
+                    shlex.quote(str(x))
+                    for x in self.command_data.to_cli_args(redact_secret=True)
+                ),
+                text=True,
+                check=False,
+            )
 
     def action_exit(self) -> None:
         self.app.exit()
