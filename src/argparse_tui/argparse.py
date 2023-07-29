@@ -98,10 +98,9 @@ def introspect_argparse_parser(
                     ]
                     secondary_opts = [x for x in param.option_strings if x not in opts]
 
-            # look for these "tags" in the help text: "secret", "prompt"
+            # look for these "tags" in the help text: "secret"
             # if present, set variables and remove from the help text.
             is_secret: bool = False
-            is_prompt: bool = False
             param_help: str = param.help
             if param_help:
                 param_help = param_help.replace("%(default)s", str(param.default))
@@ -115,8 +114,7 @@ def introspect_argparse_parser(
                         tag_txt: str = param_help[tag_start : tag_end + 1]
                         tags: list[str] = [x.strip() for x in tag_txt[1:-1].split(",")]
                         is_secret = "secret" in tags
-                        is_prompt = "prompt" in tags
-                        if any([is_secret, is_prompt]):
+                        if any([is_secret]):
                             param_help = param_help.replace(tag_txt, "")
 
             nargs: int = (
@@ -144,8 +142,6 @@ def introspect_argparse_parser(
                     multi_value=multi_value,
                     nargs=nargs,
                     secret=is_secret,
-                    read_only=is_prompt,
-                    placeholder="< You will be prompted. >" if is_prompt else "",
                 )
                 cmd_data.options.append(option_data)
 
@@ -162,8 +158,6 @@ def introspect_argparse_parser(
                     multi_value=multi_value,
                     nargs=nargs,
                     secret=is_secret,
-                    read_only=is_prompt,
-                    placeholder="< You will be prompted. >" if is_prompt else "",
                 )
                 cmd_data.arguments.append(argument_data)
 
