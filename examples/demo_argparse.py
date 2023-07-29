@@ -101,7 +101,7 @@ if __name__ == "__main__":
     sp_auth = subparsers.add_parser("auth")
     sp_auth.set_defaults(_func=auth)
     sp_auth.add_argument("--user", help="User Name")
-    sp_auth.add_argument("--password", help="User Password. <secret, prompt>")
+    sp_auth.add_argument("--password", help="User Password. <secret>")
     sp_auth.add_argument("--tokens", action="append", help="Sensitive input. <secret>")
 
     sp_list_tasks = subparsers.add_parser("list-tasks")
@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
     # add tui argument (my-cli --tui)
     add_tui_argument(parser)
-    # and/or, add tui command (my-cli tui)
+    # OR, add tui command (my-cli tui)
     add_tui_command(parser)
 
     args = sys.argv[1:]

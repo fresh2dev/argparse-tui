@@ -256,6 +256,7 @@ class Tui(App):
         self.post_run_command_redacted: str = ""
 
         root_cmd_name: str = list(command_schemas.keys())[0]
+
         if command_filter and command_schemas[root_cmd_name].subcommands:
             matching_schemas: dict[CommandName, CommandSchema] = {
                 k: v
@@ -263,12 +264,12 @@ class Tui(App):
                 if fnmatch(k, command_filter)
             }
             if len(matching_schemas) == 1 and not any(
-                x in command_filter for x in ("*", "?")
+                (x in command_filter) for x in ("*", "?")
             ):
                 command_schemas = matching_schemas
                 root_cmd_name = list(command_schemas.keys())[0]
                 #  app_name = app_name + " " + root_cmd_name
-            else:
+            elif matching_schemas:
                 command_schemas[root_cmd_name].subcommands = matching_schemas
 
         self.command_schemas = command_schemas
@@ -283,7 +284,7 @@ class Tui(App):
                 self.app_version = metadata.version(self.app_name)
 
     @classmethod
-    def from_schemas(cls, *args: CommandSchema, **kwargs) -> "Tui":
+    def from_schemas(cls, *args: CommandSchema, **kwargs) -> Tui:
         if not args:
             raise ValueError("No schemas provided.")
 
