@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
     # add tui argument (my-cli --tui)
     add_tui_argument(parser)
-    # and/or, add tui command (my-cli tui)
+    # OR, add tui command (my-cli tui)
     add_tui_command(parser)
 
     args = sys.argv[1:]

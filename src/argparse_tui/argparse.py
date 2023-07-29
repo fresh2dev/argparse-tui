@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 import sys
+from contextlib import suppress
+from copy import deepcopy
 from typing import Any
 
 from .constants import DEFAULT_COMMAND_NAME
@@ -11,7 +13,8 @@ from .tui import Tui
 
 def introspect_argparse_parser(
     parser: argparse.ArgumentParser,
-    cmd_ignorelist: list[argparse.ArgumentParser] | None = None,
+    subparser_ignorelist: list[argparse.ArgumentParser] | None = None,
+    value_overrides: dict[str, Any] | None = None,
 ) -> dict[CommandName, CommandSchema]:
     def process_command(
         cmd_name: CommandName,
@@ -40,7 +43,8 @@ def introspect_argparse_parser(
             if isinstance(param, argparse._SubParsersAction):
                 for subparser_name, subparser in param.choices.items():
                     if subparser.description != argparse.SUPPRESS and (
-                        not cmd_ignorelist or subparser not in cmd_ignorelist
+                        not subparser_ignorelist
+                        or subparser not in subparser_ignorelist
                     ):
                         cmd_data.subcommands[
                             CommandName(subparser_name)
@@ -133,6 +137,7 @@ def introspect_argparse_parser(
                     secondary_opts=secondary_opts,
                     required=param.required,
                     default=param.default,
+                    value=value_overrides.get(param.dest),
                     help=param_help,
                     choices=param.choices,
                     multiple=is_multiple,
@@ -150,6 +155,7 @@ def introspect_argparse_parser(
                     type=param_type,
                     required=param.required,
                     default=param.default,
+                    value=value_overrides.get(param.dest),
                     help=param_help,
                     choices=param.choices,
                     multiple=is_multiple,
@@ -166,6 +172,10 @@ def introspect_argparse_parser(
     data: dict[CommandName, CommandSchema] = {}
 
     root_cmd_name = CommandName("root")
+
+    if value_overrides is None:
+        value_overrides = {}
+
     data[root_cmd_name] = process_command(root_cmd_name, parser)
 
     return data
@@ -173,8 +183,8 @@ def introspect_argparse_parser(
 
 def invoke_tui(
     parser: argparse.ArgumentParser,
-    cmd_ignorelist: list[argparse.ArgumentParser] = None,
-    command_filter: str | None = None,
+    subparser_ignorelist: list[argparse.ArgumentParser] | None = None,
+    cli_args: list[str] | None = None,
 ):
     """
     Examples:
@@ -187,13 +197,47 @@ def invoke_tui(
         >>> invoke_tui(parser)  # doctest: +SKIP
     """
 
-    if cmd_ignorelist is None:
-        cmd_ignorelist = [parser]
+    cmd_filter: str | None = None
+    parsed_args: dict[str, str] = {}
+
+    if cli_args:
+        for x in cli_args:
+            if not x.startswith("-"):
+                cmd_filter = x
+                break
+
+        # Make all args optional
+        def _set_actions_optional(parser):
+            # Update arguments
+
+            for action in parser._actions:
+                action.required = False
+
+            # Update subparsers
+            if parser._subparsers:
+                for sp_action in parser._subparsers._actions:
+                    sp_action.required = False
+                    if isinstance(sp_action, argparse._SubParsersAction):
+                        for subparser in sp_action.choices.values():
+                            _set_actions_optional(subparser)
+
+        parser_copy: argparse.ArgumentParser = deepcopy(parser)
+        _set_actions_optional(parser_copy)
+
+        with suppress(SystemExit):
+            namespace, _unknown_args = parser_copy.parse_known_args(cli_args)
+            parsed_args = vars(namespace)
+
+    schemas = introspect_argparse_parser(
+        parser,
+        subparser_ignorelist=subparser_ignorelist,
+        value_overrides=parsed_args,
+    )
 
     Tui(
-        introspect_argparse_parser(parser, cmd_ignorelist=cmd_ignorelist),
+        schemas,
         app_name=parser.prog,
-        command_filter=command_filter,
+        command_filter=cmd_filter,
     ).run()
 
 
@@ -208,7 +252,7 @@ class TuiAction(argparse.Action):
         >>> _ = parser.add_argument('--tui', action=TuiAction)
         ...
         >>> parser.print_usage()
-        usage: __main__.py [-h] [--tui [TUI]]
+        usage: __main__.py [-h] [--tui]
     """
 
     def __init__(
@@ -219,34 +263,49 @@ class TuiAction(argparse.Action):
         help: str | None = "Open Textual UI.",
         const: str = None,
         metavar: str = None,
-        nargs: int | str | None = None,
+        parent_parser: argparse.ArgumentParser | None = None,
         **_kwargs: Any,
     ):
         super(TuiAction, self).__init__(
             option_strings=option_strings,
             dest=dest,
             default=default,
-            nargs="?" if nargs is None else nargs,
+            nargs=0,
             help=help,
             const=const,
             metavar=metavar,
         )
+        self._parent_parser = parent_parser
 
     def __call__(self, parser, namespace, values, option_string=None):
-        root_parser: argparse.ArgumentParser = getattr(
-            namespace,
-            "_parent_parser",
-            parser,
+        root_parser: argparse.ArgumentParser = (
+            self._parent_parser if self._parent_parser else parser
         )
+        subparser_ignorelist: list[str] = [] if option_string else [parser]
 
-        invoke_tui(root_parser, cmd_ignorelist=[parser], command_filter=values)
+        cli_args: list[str] = sys.argv[1:]
+
+        if cli_args:
+            if option_string:
+                with suppress(ValueError):
+                    cli_args.pop(cli_args.index(option_string))
+            else:
+                with suppress(ValueError):
+                    cli_args.pop(cli_args.index(self.dest.lower().replace("_", "-")))
+
+        invoke_tui(
+            root_parser,
+            subparser_ignorelist=subparser_ignorelist,
+            cli_args=cli_args,
+        )
 
         parser.exit()
 
 
 def add_tui_argument(
     parser: argparse.ArgumentParser,
-    option_strings: str | list[str] = None,
+    parent_parser: argparse.ArgumentParser | None = None,
+    option_strings: str | list[str] | None = None,
     help: str = "Open Textual UI.",
     default=argparse.SUPPRESS,
     **kwargs,
@@ -254,7 +313,8 @@ def add_tui_argument(
     """
 
     Args:
-        parser: the argparse parser
+        parser: the argparse parser to add the argument to.
+        parent_parser: the parent of the given parser.
         option_strings: list of CLI flags that will invoke the TUI (default=`--tui`)
         help: help message for the argument
 
@@ -267,7 +327,7 @@ def add_tui_argument(
         >>> add_tui_argument(parser)
         ...
         >>> parser.print_usage()
-        usage: __main__.py [-h] [--tui [CMD]]
+        usage: __main__.py [-h] [--tui]
     """
     if not option_strings:
         option_strings = [f"--{DEFAULT_COMMAND_NAME.replace('_', '-').lstrip('-')}"]
@@ -276,10 +336,10 @@ def add_tui_argument(
 
     parser.add_argument(
         *option_strings,
-        metavar="CMD",
         action=TuiAction,
         default=default,
         help=help,
+        parent_parser=parent_parser,
         **kwargs,
     )
 
@@ -325,13 +385,11 @@ def add_tui_command(
         description=argparse.SUPPRESS,
         help=help,
     )
-    tui_parser.set_defaults(_parent_parser=parser)
 
     add_tui_argument(
         tui_parser,
-        option_strings=["cmd_filter"],
-        default=None,
-        help="Command filter",
+        parent_parser=parser,
+        option_strings=[command],
     )
 
     return subparsers

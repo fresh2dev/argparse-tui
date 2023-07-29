@@ -48,6 +48,7 @@ class ArgumentSchema:
     help: str | None = None
     key: str | tuple[str] = field(default_factory=generate_unique_id)
     default: MultiValueParamData | Any | None = None
+    value: MultiValueParamData | Any | None = None
     choices: Sequence[str] | None = None
     multiple: bool = False
     multi_value: bool = False
@@ -59,6 +60,11 @@ class ArgumentSchema:
     def __post_init__(self):
         if not isinstance(self.default, MultiValueParamData):
             self.default = MultiValueParamData.process_cli_option(self.default)
+
+        if self.value is None:
+            self.value = self.default
+        elif not isinstance(self.value, MultiValueParamData):
+            self.value = MultiValueParamData.process_cli_option(self.value)
 
         default_type: list[Type[Any]] = [str]
 
@@ -82,7 +88,7 @@ class ArgumentSchema:
         elif isinstance(self.type, Type):
             self.type = [self.type]
         elif len(self.type) == 1 and isinstance(self.type[0], ChoiceSchema):
-            # if there is only one type is it is a 'ChoiceSchema':
+            # if there is only one type and it is a 'ChoiceSchema':
             self.choices = self.type[0].choices
             self.type = default_type
 
@@ -107,11 +113,11 @@ class CommandSchema:
     key: str = field(default_factory=generate_unique_id)
     options: list[OptionSchema] = field(default_factory=list)
     arguments: list[ArgumentSchema] = field(default_factory=list)
-    subcommands: dict["CommandName", "CommandSchema"] = field(default_factory=dict)
-    parent: "CommandSchema | None" = None
+    subcommands: dict[CommandName, CommandSchema] = field(default_factory=dict)
+    parent: CommandSchema | None = None
 
     @property
-    def path_from_root(self) -> list["CommandSchema"]:
+    def path_from_root(self) -> list[CommandSchema]:
         node = self
         path = [self]
         while True:

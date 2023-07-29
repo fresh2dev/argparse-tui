@@ -102,7 +102,7 @@ class ParameterControls(Widget):
         schema = self.schema
         name = schema.name
         argument_type = schema.type
-        default = schema.default
+        default = schema.value
         help_text = getattr(schema, "help", "") or ""
         multiple = schema.multiple
         is_option = isinstance(schema, OptionSchema)
@@ -196,7 +196,7 @@ class ParameterControls(Widget):
     def make_widget_group(self) -> Iterable[Widget]:
         """For this option, yield a single set of widgets required to receive user input for it."""
         schema = self.schema
-        default = schema.default
+        default = schema.value
         parameter_type = schema.type
         name = schema.name
         multiple = schema.multiple

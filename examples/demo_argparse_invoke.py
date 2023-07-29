@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 from argparse_tui import invoke_tui
 
@@ -12,4 +13,4 @@ parser.add_argument(
     help="do not output the trailing newline",
 )
 
-invoke_tui(parser)
+invoke_tui(parser, cli_args=sys.argv[1:])
