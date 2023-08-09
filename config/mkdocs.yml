@@ -19,8 +19,6 @@ extra:
 ## https://www.mkdocs.org/user-guide/writing-your-docs/#configure-pages-and-navigation
 nav:
   - Home: index.md
-  - Articles:
-      - 'page/related.md'
   - Reference: reference/
   - Changelog: changelog.md
   - License: license.md

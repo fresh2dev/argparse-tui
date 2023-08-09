@@ -87,6 +87,10 @@ class UserCommandData:
         """
         Generates a list of strings representing the CLI invocation based on the user input data.
 
+        Args:
+            include_root_command: ...
+            redact_secret: ..
+
         Returns:
             A list of strings that can be passed to subprocess.run to execute the command.
         """
@@ -252,6 +256,9 @@ class UserCommandData:
         """
         Generates a redacted string representing the CLI invocation as if typed
         directly into the command line.
+
+        Args:
+            include_root_command: ...
 
         Returns:
             A string representing the command invocation.
