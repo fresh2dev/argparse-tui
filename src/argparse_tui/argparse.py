@@ -126,6 +126,12 @@ def introspect_argparse_parser(
             )
             multi_value: bool = nargs < 0 or nargs > 1
 
+            is_required: bool = (
+                param.required
+                and param.default is None
+                and param.nargs not in ["?", "*", argparse.REMAINDER]
+            )
+
             if param.option_strings:
                 option_data = OptionSchema(
                     name=opts,
@@ -133,7 +139,7 @@ def introspect_argparse_parser(
                     is_flag=is_flag,
                     counting=is_counting,
                     secondary_opts=secondary_opts,
-                    required=param.required,
+                    required=is_required,
                     default=param.default,
                     value=value_overrides.get(param.dest),
                     help=param_help,
@@ -149,7 +155,7 @@ def introspect_argparse_parser(
                 argument_data = ArgumentSchema(
                     name=param.dest,
                     type=param_type,
-                    required=param.required,
+                    required=is_required,
                     default=param.default,
                     value=value_overrides.get(param.dest),
                     help=param_help,
