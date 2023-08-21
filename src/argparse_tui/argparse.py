@@ -171,7 +171,7 @@ def introspect_argparse_parser(
 
     data: dict[CommandName, CommandSchema] = {}
 
-    root_cmd_name = CommandName("root")
+    root_cmd_name = CommandName(parser.prog.split(".", 1)[0])
 
     if value_overrides is None:
         value_overrides = {}
