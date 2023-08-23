@@ -7,8 +7,8 @@ name = "argparse-tui"
 authors = [
     {name = "Donald Mellenbruch", email = "hello@f2dv.com"},
 ]
-description = "Display your Python argparse parser as a TUI."
-readme = "README.md"
+description = "Build a TUI with Python's Argparse"
+readme = "README.pypi.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.7"
 classifiers = [
@@ -21,6 +21,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+build = [
+    "build==0.*",
+    "wheel==0.*",
+    "twine==4.*",
+]
 dev = [
     "python-lsp-server[rope]==1.*",
     "pylint==2.*",

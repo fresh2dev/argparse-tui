@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.1 - 2023-08-24
+
+### :point_right: Changes
+
+- Derive root cmd name from parser.prog [52d6a65]
+- Remove 'group' label [45dc5d4]
+
+### :fist: Fixes
+
+- Correct logic for required arguments [7e818a6]
+
 ## 0.2.0 - 2023-07-29
 
 ### :clap: Features

@@ -126,6 +126,12 @@ def introspect_argparse_parser(
             )
             multi_value: bool = nargs < 0 or nargs > 1
 
+            is_required: bool = (
+                param.required
+                and param.default is None
+                and param.nargs not in ["?", "*", argparse.REMAINDER]
+            )
+
             if param.option_strings:
                 option_data = OptionSchema(
                     name=opts,
@@ -133,7 +139,7 @@ def introspect_argparse_parser(
                     is_flag=is_flag,
                     counting=is_counting,
                     secondary_opts=secondary_opts,
-                    required=param.required,
+                    required=is_required,
                     default=param.default,
                     value=value_overrides.get(param.dest),
                     help=param_help,
@@ -149,7 +155,7 @@ def introspect_argparse_parser(
                 argument_data = ArgumentSchema(
                     name=param.dest,
                     type=param_type,
-                    required=param.required,
+                    required=is_required,
                     default=param.default,
                     value=value_overrides.get(param.dest),
                     help=param_help,
@@ -165,7 +171,7 @@ def introspect_argparse_parser(
 
     data: dict[CommandName, CommandSchema] = {}
 
-    root_cmd_name = CommandName("root")
+    root_cmd_name = CommandName(parser.prog.split(".", 1)[0])
 
     if value_overrides is None:
         value_overrides = {}
@@ -179,8 +185,14 @@ def invoke_tui(
     parser: argparse.ArgumentParser,
     subparser_ignorelist: list[argparse.ArgumentParser] | None = None,
     cli_args: list[str] | None = None,
-):
-    """
+) -> None:
+    """Invoke a Textual UI (TUI) given an argparse parser.
+
+    Args:
+        parser: ...
+        subparser_ignorelist: ...
+        cli_args: Arguments parsed for pre-populating the TUI form.
+
     Examples:
         >>> import argparse
         >>> from argparse_tui import invoke_tui
@@ -237,6 +249,15 @@ def invoke_tui(
 
 class TuiAction(argparse.Action):
     """argparse `Action` that will analyze the parser and display a TUI.
+
+    Args:
+        option_strings: ...
+        dest: ...
+        default: ...
+        help: ...
+        const: ...
+        metavar: ...
+        parent_parser: ...
 
     Examples:
         >>> import argparse
@@ -309,8 +330,10 @@ def add_tui_argument(
     Args:
         parser: the argparse parser to add the argument to.
         parent_parser: the parent of the given parser.
-        option_strings: list of CLI flags that will invoke the TUI (default=`--tui`)
-        help: help message for the argument
+        option_strings: list of CLI flags that will invoke the TUI
+        help: ...
+        default: ...
+        **kwargs: passed to `parser.add_argument(...)`
 
     Examples:
         >>> import argparse
@@ -351,6 +374,9 @@ def add_tui_command(
         command: name of the CLI command that will invoke the TUI (default=`tui`)
         help: help message for the argument
         **kwargs: if subparsers do not already exist, create with these kwargs.
+
+    Returns:
+        The Argparse subparsers action that was discovered or created.
 
     Examples:
         >>> import argparse

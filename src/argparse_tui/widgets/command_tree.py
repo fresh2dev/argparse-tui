@@ -50,8 +50,6 @@ class CommandTree(Tree[CommandSchema]):
                     label = Text(cmd_name)
                     group_style = self.get_component_rich_style("group")
                     label.stylize(group_style)
-                    label.append(" ")
-                    label.append("group", "dim i")
                     child = node.add(label, allow_expand=False, data=cmd_data)
                     build_tree(cmd_data.subcommands, child)
                 else:

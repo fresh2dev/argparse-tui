@@ -19,8 +19,6 @@ extra:
 ## https://www.mkdocs.org/user-guide/writing-your-docs/#configure-pages-and-navigation
 nav:
   - Home: index.md
-  - Articles:
-      - 'page/related.md'
   - Reference: reference/
   - Changelog: changelog.md
   - License: license.md
@@ -106,10 +104,10 @@ plugins:
             members_order: 'alphabetical'  # 'source'
             docstring_style: google
             show_submodules: false
-            show_signature: false
+            show_signature: true
+            show_signature_annotations: true
+            separate_signature: true
             merge_init_into_class: true
-            show_signature_annotations: false
-            separate_signature: false
             show_if_no_docstring: false
             show_root_heading: false
             show_root_toc_entry: false
