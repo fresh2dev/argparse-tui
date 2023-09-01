@@ -6,7 +6,7 @@ import sys
 
 
 def get_orig_argv() -> list[str]:
-    """Polyfil for orig_argv"""
+    # Polyfil for orig_argv
     if hasattr(sys, "orig_argv"):
         return sys.orig_argv
     import ctypes
@@ -21,7 +21,7 @@ def get_orig_argv() -> list[str]:
 
 
 def detect_run_string(path=None, _main=sys.modules["__main__"]) -> str:
-    """This is a slightly modified version of a function from Click."""
+    # This is a slightly modified version of a function from Click.
     if not path:
         path = sys.argv[0]
 

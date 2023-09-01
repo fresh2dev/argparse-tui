@@ -185,8 +185,8 @@ class CommandBuilder(Screen):
         self,
         event: Tree.NodeHighlighted[CommandSchema],
     ) -> None:
-        """When we highlight a node in the CommandTree, the main body of the home page updates
-        to display a form specific to the highlighted command."""
+        # When we highlight a node in the CommandTree, the main body of the home page updates
+        # to display a form specific to the highlighted command.
         await self._refresh_command_form(event.node)
 
     @on(CommandForm.Changed)
@@ -198,8 +198,8 @@ class CommandBuilder(Screen):
         )
 
     def _update_command_description(self, node: TreeNode[CommandSchema]) -> None:
-        """Update the description of the command at the bottom of the sidebar
-        based on the currently selected node in the command tree."""
+        # Update the description of the command at the bottom of the sidebar
+        # based on the currently selected node in the command tree.
         description_box = self.query_one("#home-command-description", Static)
         description_text = node.data.docstring or ""
         description_text = description_text.lstrip()
@@ -211,7 +211,7 @@ class CommandBuilder(Screen):
         command_schema: CommandSchema,
         command_data: UserCommandData,
     ) -> None:
-        """Update the preview box showing the command string to be executed"""
+        # Update the preview box showing the command string to be executed
         if self.command_data is not None:
             command_name_syntax_style = self.get_component_rich_style(
                 "command-name-syntax",

@@ -97,8 +97,8 @@ class ParameterControls(Widget):
         return should_be_visible
 
     def compose(self) -> ComposeResult:
-        """Takes the schemas for each parameter of the current command, and converts it into a
-        form consisting of Textual widgets."""
+        # Takes the schemas for each parameter of the current command, and converts it into a
+        # form consisting of Textual widgets.
         schema = self.schema
         name = schema.name
         argument_type = schema.type
@@ -194,7 +194,7 @@ class ParameterControls(Widget):
             yield Static(help_text, classes="command-form-control-help-text")
 
     def make_widget_group(self) -> Iterable[Widget]:
-        """For this option, yield a single set of widgets required to receive user input for it."""
+        # For this option, yield a single set of widgets required to receive user input for it.
         schema = self.schema
         default = schema.value
         parameter_type = schema.type
@@ -250,7 +250,7 @@ class ParameterControls(Widget):
         control_widget: ControlWidgetType,
         default_value: Any,
     ) -> None:
-        """Set the default value of a parameter-handling widget."""
+        # Set the default value of a parameter-handling widget.
         if isinstance(control_widget, Input):
             control_widget.value = str(default_value)
             control_widget.placeholder = f"{default_value} (default)"
