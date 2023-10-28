@@ -4,7 +4,7 @@ import argparse
 import sys
 from contextlib import suppress
 from copy import deepcopy
-from typing import Any
+from typing import Any, Sequence
 
 from .constants import DEFAULT_COMMAND_NAME
 from .schemas import ArgumentSchema, CommandName, CommandSchema, OptionSchema
@@ -183,15 +183,15 @@ def introspect_argparse_parser(
 
 def invoke_tui(
     parser: argparse.ArgumentParser,
+    cli_args: Sequence[str] | None = None,
     subparser_ignorelist: list[argparse.ArgumentParser] | None = None,
-    cli_args: list[str] | None = None,
 ) -> None:
     """Invoke a Textual UI (TUI) given an argparse parser.
 
     Args:
         parser: ...
-        subparser_ignorelist: ...
         cli_args: Arguments parsed for pre-populating the TUI form.
+        subparser_ignorelist: ...
 
     Examples:
         >>> import argparse
