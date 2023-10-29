@@ -79,7 +79,7 @@ class ArgumentSchema:
                     self.type = [x]
                     break
             else:
-                for v in self.type.kwargs.values():
+                for v in self.type.keywords.values():
                     if isinstance(v, Type):
                         self.type = [v]
                         break
