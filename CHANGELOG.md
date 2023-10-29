@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.2 - 2023-10-29
+
+### :fist: Fixes
+
+- Type lookup when given a partial with kwargs [8c48e8c]
+- Enforce proper handling of is_flag arguments [450cc5e]
+
+### :point_right: Changes
+
+- Use more generic type-hints [016d634]
+- Pin textual < 1 [f17b432]
+
 ## 0.2.1 - 2023-08-24
 
 ### :point_right: Changes
