@@ -4,7 +4,7 @@ import argparse
 import sys
 from contextlib import suppress
 from copy import deepcopy
-from typing import Any
+from typing import Any, Sequence
 
 from .constants import DEFAULT_COMMAND_NAME
 from .schemas import ArgumentSchema, CommandName, CommandSchema, OptionSchema
@@ -55,7 +55,7 @@ def introspect_argparse_parser(
                         )
                 continue
 
-            param_type: type[Any] | None = None
+            param_type: type[Any] | None = param.type
             if param_types:
                 param_type = param_types.get(param.dest, param.type)
 
@@ -118,7 +118,9 @@ def introspect_argparse_parser(
                             param_help = param_help.replace(tag_txt, "")
 
             nargs: int = (
-                1
+                0
+                if param.nargs is None and is_flag
+                else 1
                 if param.nargs in [None, "?"]
                 else -1
                 if param.nargs in ["+", "*", argparse.REMAINDER]
@@ -130,6 +132,7 @@ def introspect_argparse_parser(
                 param.required
                 and param.default is None
                 and param.nargs not in ["?", "*", argparse.REMAINDER]
+                and nargs != 0
             )
 
             if param.option_strings:
@@ -183,15 +186,15 @@ def introspect_argparse_parser(
 
 def invoke_tui(
     parser: argparse.ArgumentParser,
+    cli_args: Sequence[str] | None = None,
     subparser_ignorelist: list[argparse.ArgumentParser] | None = None,
-    cli_args: list[str] | None = None,
 ) -> None:
     """Invoke a Textual UI (TUI) given an argparse parser.
 
     Args:
         parser: ...
-        subparser_ignorelist: ...
         cli_args: Arguments parsed for pre-populating the TUI form.
+        subparser_ignorelist: ...
 
     Examples:
         >>> import argparse

@@ -21,9 +21,6 @@ class FormControlMeta:
 
 
 class CommandForm(Widget):
-    """Form which is constructed from an introspected Click app. Users
-    make use of this form in order to construct CLI invocation strings."""
-
     DEFAULT_CSS = """
     .command-form-heading {
         padding: 1 0 0 1;
@@ -86,6 +83,9 @@ class CommandForm(Widget):
         classes: str | None = None,
         disabled: bool = False,
     ):
+        # Form which is constructed from an introspected Argparse parser. Users
+        # make use of this form in order to construct CLI invocation strings.
+
         super().__init__(name=name, id=id, classes=classes, disabled=disabled)
         self.command_schema = command_schema
         self.command_schemas = command_schemas

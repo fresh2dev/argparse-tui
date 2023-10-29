@@ -12,8 +12,7 @@ from .. import constants
 
 
 class TextDialog(ModalScreen[None]):
-    """Base modal dialog for showing information."""
-
+    # Default CSS for the base text modal dialog.
     DEFAULT_CSS = """
     TextDialog {
         align: center middle;
@@ -43,15 +42,14 @@ class TextDialog(ModalScreen[None]):
         min-width: 100%;
     }
     """
-    """Default CSS for the base text modal dialog."""
 
+    # Bindings for the base text modal dialog.
     BINDINGS = [
         Binding("escape", "dismiss(None)", "", show=False),
     ]
-    """Bindings for the base text modal dialog."""
 
     def __init__(self, title: TextType, message: TextType) -> None:
-        """Initialise the dialog.
+        """Base modal dialog for showing information.
 
         Args:
             title: The title for the dialog.
@@ -63,11 +61,11 @@ class TextDialog(ModalScreen[None]):
 
     @property
     def button_style(self) -> ButtonVariant:
-        """The style for the dialog's button."""
+        # The style for the dialog's button.
         return "primary"
 
     def compose(self) -> ComposeResult:
-        """Compose the content of the modal dialog."""
+        # Compose the content of the modal dialog.
         with Vertical():
             with Center():
                 yield Static(self._title, classes="spaced")
@@ -76,11 +74,11 @@ class TextDialog(ModalScreen[None]):
                 yield Button("OK", variant=self.button_style)
 
     def on_mount(self) -> None:
-        """Configure the dialog once the DOM has loaded."""
+        # Configure the dialog once the DOM has loaded.
         self.query_one(Button).focus()
 
     def on_button_pressed(self) -> None:
-        """Handle the OK button being pressed."""
+        # Handle the OK button being pressed.
         self.dismiss(None)
 
 

@@ -8,13 +8,13 @@ edit_uri: "edit/main/docs"
 docs_dir: "../docs"
 site_dir: "../public"
 
-copyright: '<a href="https://www.fresh2.dev"><img src="https://img.fresh2.dev/fresh2dev.svg" style="height: 3em; margin-right: 1em; filter: invert(100%);"></img></a> &copy; 2023 <a rel="license" target="_blank" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0; margin-left: 1em;" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a>'
+copyright: '<a href="https://www.fresh2.dev/"><img src="https://img.fresh2.dev/fresh2dev.svg" style="height: 3em; margin-right: 1em; filter: invert(100%);"></img></a> &copy; 2023 <a rel="license" target="_blank" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0; margin-left: 1em;" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a>'
 extra:
   generator: false
   social: []
     # - name: Fresh2.dev
     #   icon: "material/home"
-    #   link: 'https://www.fresh2.dev'
+    #   link: 'https://www.fresh2.dev/'
 
 ## https://www.mkdocs.org/user-guide/writing-your-docs/#configure-pages-and-navigation
 nav:
@@ -22,11 +22,10 @@ nav:
   - Reference: reference/
   - Changelog: changelog.md
   - License: license.md
-  - Discussion: comments.md
+  - Ideas: ideas.md
   - '<- f2dv.com':
-    - '/home': 'https://www.f2dv.com'
-    - '/code': 'https://www.f2dv.com/projects'
-    - '/fund': 'https://www.f2dv.com/fund'
+    - '/home': 'https://www.f2dv.com/'
+    - '/fund': 'https://www.f2dv.com/fund/'
 
 watch:
   - ../src
