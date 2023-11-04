@@ -38,7 +38,9 @@ data:
         "commands": [
           "mkdir -p ~/.config/pip && echo \"$PIP_CONF\" > ~/.config/pip/pip.conf",
           "myke py install",
-          "myke py reports",
+          "myke py clean",
+          "myke py mkdocs",
+          "myke py test --reports --no-pylint",
           "myke py build"
         ],
         "when": {}
