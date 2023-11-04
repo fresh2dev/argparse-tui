@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.3 - 2023-12-11
+
+### :fist: Fixes
+
+- Decouple `multi_value` and `multiple`.
+
+SLOC Analysis:
+
+| Directory        |   Empty |   Comment |   Docstring |   Code |   Statements |
+|------------------|---------|-----------|-------------|--------|--------------|
+| src/argparse_tui |     318 |       128 |         164 |   1693 |         1020 |
+| tests            |      56 |         0 |          11 |    211 |          108 |
+
 ## 0.2.2 - 2023-10-29
 
 ### :fist: Fixes
