@@ -4,7 +4,7 @@ site_url: !ENV [MKDOCS_SITE_URL, "https://www.f2dv.com/r/argparse-tui"]
 repo_url: "https://www.github.com/fresh2dev/argparse-tui"
 repo_name: "fresh2dev/argparse-tui"
 edit_uri: "edit/main/docs"
-#edit_uri_template: "src/branch/main/docs/{path}"
+# edit_uri_template: "src/branch/main/docs/{path}"
 docs_dir: "../docs"
 site_dir: "../public"
 
@@ -24,8 +24,8 @@ nav:
   - License: license.md
   - Ideas: ideas.md
   - '<- f2dv.com':
-    - '/home': 'https://www.f2dv.com/'
-    - '/fund': 'https://www.f2dv.com/fund/'
+      - '/projects': 'https://www.f2dv.com/projects/'
+      - '/fund': 'https://www.f2dv.com/fund/'
 
 watch:
   - ../src
@@ -65,8 +65,8 @@ markdown_extensions:
       toc_depth: 3
   - attr_list
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.magiclink:

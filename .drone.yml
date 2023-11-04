@@ -1,3 +1,4 @@
+---
 kind: template
 load: hostbutter.jsonnet
 data:
@@ -30,7 +31,7 @@ data:
     [
       {
         "name": "py-test",
-        "image": "registry.lokalhost.net/fresh2dev/mykefiles:c18bafd",
+        "image": "registry.lokalhost.net/fresh2dev/mykefiles:59b8bc1",
         "environment": {
           "PIP_CONF": {"from_secret": "PIP_CONF"},
           "MYKE_MODULE": "mykefiles.python"
@@ -52,7 +53,7 @@ data:
     [
       {
         "name": "py-build-package",
-        "image": "registry.lokalhost.net/fresh2dev/mykefiles:c18bafd",
+        "image": "registry.lokalhost.net/fresh2dev/mykefiles:59b8bc1",
         "environment": {
           "PYPI_CREDS": {"from_secret": "PYPI_CREDS"},
           "PIP_CONF": {"from_secret": "PIP_CONF"},
@@ -68,7 +69,7 @@ data:
       },
       {
         "name": "py-publish-sandbox",
-        "image": "registry.lokalhost.net/fresh2dev/mykefiles:c18bafd",
+        "image": "registry.lokalhost.net/fresh2dev/mykefiles:59b8bc1",
         "environment": {
           "PYPI_CREDS": {"from_secret": "PYPI_CREDS"},
           "PIP_CONF": {"from_secret": "PIP_CONF"},
@@ -84,7 +85,7 @@ data:
       },
       {
         "name": "py-publish-dev",
-        "image": "registry.lokalhost.net/fresh2dev/mykefiles:c18bafd",
+        "image": "registry.lokalhost.net/fresh2dev/mykefiles:59b8bc1",
         "environment": {
           "PYPI_CREDS": {"from_secret": "PYPI_CREDS"},
           "PIP_CONF": {"from_secret": "PIP_CONF"},
@@ -102,7 +103,7 @@ data:
       },
       {
         "name": "py-publish-test",
-        "image": "registry.lokalhost.net/fresh2dev/mykefiles:c18bafd",
+        "image": "registry.lokalhost.net/fresh2dev/mykefiles:59b8bc1",
         "environment": {
           "PYPI_CREDS": {"from_secret": "PYPI_CREDS"},
           "PIP_CONF": {"from_secret": "PIP_CONF"},
@@ -120,7 +121,7 @@ data:
       },
       {
         "name": "py-publish-prod",
-        "image": "registry.lokalhost.net/fresh2dev/mykefiles:c18bafd",
+        "image": "registry.lokalhost.net/fresh2dev/mykefiles:59b8bc1",
         "environment": {
           "PYPI_CREDS": {"from_secret": "PYPI_CREDS"},
           "PIP_CONF": {"from_secret": "PIP_CONF"},
