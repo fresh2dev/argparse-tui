@@ -1,5 +1,5 @@
 # Changes here will be overwritten by Copier
-_commit: d62181c
+_commit: 3961c32
 _src_path: ssh://git@git.lokalhost.net:2222/donald/copier-f2dv-project.git
 author_email: hello@f2dv.com
 author_name: Donald Mellenbruch
@@ -13,7 +13,7 @@ is_minimal: false
 is_python: true
 license_type: MIT
 package_name: argparse_tui
-project_description: Build a TUI with Python's Argparse
+project_description: Your Argparse CLI, now with a TUI.
 project_name: argparse-tui
 python_version: '3.7'
 repo_mirror: https://www.f2dv.com/r/argparse-tui

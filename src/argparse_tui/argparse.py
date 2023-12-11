@@ -62,6 +62,17 @@ def introspect_argparse_parser(
             if param_type is None and param.default is not None:
                 param_type = type(param.default)
 
+            nargs: int = (
+                0
+                if param.nargs is None and is_flag
+                else 1
+                if param.nargs in [None, "?"]
+                else -1
+                if param.nargs in ["+", "*", argparse.REMAINDER]
+                else int(param.nargs)
+            )
+            multi_value: bool = nargs < 0 or nargs > 1
+
             is_counting: bool = False
             is_multiple: bool = False
             is_flag: bool = False
@@ -71,7 +82,7 @@ def introspect_argparse_parser(
 
             if isinstance(param, argparse._CountAction):
                 is_counting = True
-            elif isinstance(param, argparse._AppendAction):
+            elif isinstance(param, argparse._AppendAction) and nargs <= 1:
                 is_multiple = True
             elif isinstance(param, argparse._StoreConstAction):
                 is_flag = True
@@ -116,17 +127,6 @@ def introspect_argparse_parser(
                         is_secret = "secret" in tags
                         if any([is_secret]):
                             param_help = param_help.replace(tag_txt, "")
-
-            nargs: int = (
-                0
-                if param.nargs is None and is_flag
-                else 1
-                if param.nargs in [None, "?"]
-                else -1
-                if param.nargs in ["+", "*", argparse.REMAINDER]
-                else int(param.nargs)
-            )
-            multi_value: bool = nargs < 0 or nargs > 1
 
             is_required: bool = (
                 param.required

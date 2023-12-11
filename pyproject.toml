@@ -7,7 +7,7 @@ name = "argparse-tui"
 authors = [
     {name = "Donald Mellenbruch", email = "hello@f2dv.com"},
 ]
-description = "Build a TUI with Python's Argparse"
+description = "Your Argparse CLI, now with a TUI."
 readme = "README.pypi.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.7"
@@ -21,33 +21,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-build = [
-    "build==0.*",
-    "wheel==0.*",
-    "twine==4.*",
-]
 dev = [
-    "python-lsp-server[rope]==1.*",
-    "pylint==2.*",
-    "pylint-pytest==1.*",
-    "mypy[reports]==1.*",
-    "ruff==0.*",
-    "black[jupyter]==23.*",
-    "isort==5.*",
-    "bump2version==1.*",
     "pdbpp",
     # python -m ipykernel install --user --name argparse-tui
     "ipykernel",
     "ipywidgets",
     "ipython",
-]
-docs = [
-    "mkdocs==1.*",
-    "mkdocs-material==9.*",
-    "mkdocs-jupyter==0.24.*",
-    "mkdocstrings[python]==0.20.*",
-    "mkdocs-autorefs==0.*",
-    "mkdocs-include-dir-to-nav==1.*",
 ]
 tests = [
     "pytest==7.*",
@@ -55,8 +34,7 @@ tests = [
     "pytest-html==3.*",
     "pytest-sugar==0.*",
     "pytest-custom-exit-code==0.3.*",
-    "pylint==2.*",
-    "pylint-pytest==1.*",
+    "pylint==3.*",
     "packaging==23.*",
     "mockish>=0.1.1,<2",
 ]
@@ -81,41 +59,55 @@ version = {attr = "argparse_tui.__version__.__version__"}
 minversion = 7.0
 testpaths = ["tests"]
 
-[tool.pylint.MASTER]
-# ignore-paths = "^(?!src|tests).*$"
-ignore-paths = "^.*$"
-load-plugins = ["pylint_pytest"]
+[tool.pyright]
+include = ["src", "tests"]
+typeCheckingMode = "strict"
+reportImportCycles = "warning"
+reportUnusedImport = "warning"
+reportUnusedClass = "warning"
+reportUnusedFunction = "warning"
+reportUnusedVariable = "warning"
+reportDuplicateImport = "warning"
+reportPrivateUsage = "warning"
+reportConstantRedefinition = "warning"
+reportUninitializedInstanceVariable = "warning"
+reportUnknownParameterType = "warning"
+reportUnknownArgumentType = "warning"
+reportUnknownLambdaType = "warning"
+reportUnknownVariableType = "warning"
+reportUnknownMemberType = "warning"
+reportMissingParameterType = "warning"
+reportMissingTypeArgument = "none"
+reportUnnecessaryIsInstance = "warning"
+reportUnnecessaryCast = "warning"
+reportUnnecessaryComparison = "warning"
+reportUnnecessaryContains = "warning"
+reportUnusedCallResult = "warning"
+reportUnusedExpression = "warning"
+reportUnnecessaryTypeIgnoreComment = "warning"
+reportImplicitOverride = "warning"
+reportShadowedImports = "warning"
+reportDeprecated = "warning"
+reportMissingImports = true
+reportMissingTypeStubs = false
+
+[tool.pylint.main]
+ignore-paths = "^(?!src|tests).*$"
 extension-pkg-whitelist = ["pydantic"]
 [tool.pylint.messages_control]
 max-line-length = 88
 disable = [
     "fixme",
     "invalid-name",
+    "line-too-long",
     "unnecessary-pass",
     "unnecessary-ellipsis",
     "too-few-public-methods",
     "import-outside-toplevel",
+    "missing-class-docstring",
     "missing-module-docstring",
-    "protected-access",
-    "redefined-builtin",
+    "missing-function-docstring",
 ]
-
-[tool.mypy]
-mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
-files = "src/**/*.py"
-plugins = ["pydantic.mypy"]
-namespace_packages = true
-explicit_package_bases = true
-strict = true
-[tool.pydantic-mypy]
-init_forbid_extra = true
-init_typed = true
-warn_required_dynamic_aliases = true
-warn_untyped_fields = true
-
-[tool.black]
-line-length = 88
-include = 'src\/.*\.pyi?$|tests\/.*\.pyi?|docs\/.*\.ipynb$'
 
 [tool.isort]
 profile = "black"
@@ -127,6 +119,20 @@ honor_noqa = true
 quiet = true
 
 [tool.ruff]
+include = ["src/**/*.py", "tests/**/*.py"]
+
+respect-gitignore = true
+
+# Same as Black.
+line-length = 88
+indent-width = 4
+
+target-version = "py37"
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint]
 select = [
     "E",  # pycodestyle errors
     "W",  # pycodestyle warnings
@@ -152,17 +158,19 @@ select = [
     "SIM",# flake8-simplify
     "ARG",# flake8-unused-arguments
     "PTH",# flake8-use-pathlib
-    "ERA",# eradicate
+    # "ERA",# eradicate
     "PLW",# pylint-specific warnings
     "PLE",# pylint-specific errors
     "PLR",# pylint-specific refactors
     "PLC",# pylint-specific conventions
-    # "RUF",# ruff-specific
+    "RUF",# ruff-specific
     "TRY",# tryceratops
 ]
 ignore = [
     # "E501",  # line too long, handled by black
-    "B008",  # do not perform function calls in argument defaults
+    # "B008",  # do not perform function calls in argument defaults
+    "PLR0913",  # too many arguments (n > 5)
+    "PLR2004",  # magic value used in comparison
 ]
 
 # Avoid trying to fix flake8-bugbear (`B`) violations.
@@ -171,18 +179,8 @@ ignore = [
 fixable = ["W", "E", "COM", "F401"]
 unfixable = []
 
-respect-gitignore = true
-
-# Same as Black.
-line-length = 88
-
-target-version = "py37"
-
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
 # Ignore `E402` (import violations) in all `__init__.py` files, and in `path/to/file.py`.
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["E402", "F401"]
 
 [tool.tox]

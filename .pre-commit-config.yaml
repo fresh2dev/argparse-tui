@@ -1,0 +1,18 @@
+repos:
+  - repo: local
+    hooks:
+      - id: myke-py-format
+        name: myke py format
+        entry: myke py format
+        description: Format Python project.
+        language: python
+        types: [python]
+        pass_filenames: false
+
+      - id: myke-py-check
+        name: myke py check --critical
+        entry: myke py check --critical
+        description: Check Python project for critical errors.
+        language: python
+        types: [python]
+        pass_filenames: false

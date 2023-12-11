@@ -95,9 +95,6 @@ class ArgumentSchema:
         if self.choices:
             self.choices = [str(x) for x in self.choices]
 
-        if self.multi_value:
-            self.multiple = True
-
 
 @dataclass
 class OptionSchema(ArgumentSchema):
