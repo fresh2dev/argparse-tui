@@ -6,6 +6,8 @@ from contextlib import suppress
 from copy import deepcopy
 from typing import Any, Sequence
 
+from textual.app import App
+
 from .constants import DEFAULT_COMMAND_NAME
 from .schemas import ArgumentSchema, CommandName, CommandSchema, OptionSchema
 from .tui import Tui
@@ -186,26 +188,33 @@ def introspect_argparse_parser(
     return data
 
 
-def invoke_tui(
+def build_tui(
     parser: argparse.ArgumentParser,
     cli_args: Sequence[str] | None = None,
     subparser_ignorelist: list[argparse.ArgumentParser] | None = None,
-) -> None:
-    """Invoke a Textual UI (TUI) given an argparse parser.
+) -> App:
+    """Build a Textual UI (TUI) given an argparse parser.
 
     Args:
         parser: ...
         cli_args: Arguments parsed for pre-populating the TUI form.
         subparser_ignorelist: ...
 
+    Returns:
+        a Textualize App
+
     Examples:
         >>> import argparse
         >>> from argparse_tui import invoke_tui
+        >>> import textual
         ...
         >>> parser = argparse.ArgumentParser(prog="awesome-app")
         >>> _ = parser.add_argument("--value")
         ...
-        >>> invoke_tui(parser)  # doctest: +SKIP
+        >>> app = build_tui(parser)
+        ...
+        >>> isinstance(app, textual.app.App)
+        True
     """
 
     cmd_filter: str | None = None
@@ -245,11 +254,39 @@ def invoke_tui(
         value_overrides=parsed_args,
     )
 
-    Tui(
-        schemas,
-        app_name=parser.prog,
-        command_filter=cmd_filter,
-    ).run()
+    return Tui(schemas, app_name=parser.prog, command_filter=cmd_filter)
+
+
+def invoke_tui(
+    parser: argparse.ArgumentParser,
+    cli_args: Sequence[str] | None = None,
+    subparser_ignorelist: list[argparse.ArgumentParser] | None = None,
+) -> None:
+    """Invoke a Textual UI (TUI) given an argparse parser.
+
+    Args:
+        parser: ...
+        cli_args: Arguments parsed for pre-populating the TUI form.
+        subparser_ignorelist: ...
+
+    Returns:
+        a Textualize App
+
+    Examples:
+        >>> import argparse
+        >>> from argparse_tui import invoke_tui
+        ...
+        >>> parser = argparse.ArgumentParser(prog="awesome-app")
+        >>> _ = parser.add_argument("--value")
+        ...
+        >>> invoke_tui(parser)  # doctest: +SKIP
+    """
+    app: App = build_tui(
+        parser=parser,
+        cli_args=cli_args,
+        subparser_ignorelist=subparser_ignorelist,
+    )
+    app.run()
 
 
 class TuiAction(argparse.Action):
