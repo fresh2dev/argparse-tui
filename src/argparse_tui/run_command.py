@@ -4,7 +4,7 @@ import itertools
 import shlex
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Any
 
 from rich.text import Text
 
@@ -39,8 +39,8 @@ class UserOptionData:
     def string_name(self) -> str:
         if isinstance(self.name, str):
             return self.name
-        else:
-            return self.name[0]
+
+        return self.name[0]
 
 
 @dataclass
@@ -73,17 +73,17 @@ class UserCommandData:
     """
 
     name: CommandName
-    options: List[UserOptionData]
-    arguments: List[UserArgumentData]
-    subcommand: Optional["UserCommandData"] = None
-    parent: Optional["UserCommandData"] = None
-    command_schema: Optional["CommandSchema"] = None
+    options: list[UserOptionData]
+    arguments: list[UserArgumentData]
+    subcommand: UserCommandData | None = None
+    parent: UserCommandData | None = None
+    command_schema: CommandSchema | None = None
 
     def to_cli_args(
         self,
         include_root_command: bool = False,
         redact_secret: bool = False,
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Generates a list of strings representing the CLI invocation based on the user input data.
 
@@ -121,7 +121,7 @@ class UserCommandData:
                 if option.option_schema.default is not None:
                     default_data: list[tuple[Any]] = option.option_schema.default.values
                 else:
-                    default_data = [tuple()]
+                    default_data = [()]
 
                 flattened_values = sorted(itertools.chain.from_iterable(value_data))
                 flattened_defaults = sorted(itertools.chain.from_iterable(default_data))

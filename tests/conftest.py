@@ -4,7 +4,7 @@ import os
 import re
 import shutil
 from pathlib import Path
-from typing import Dict, Generator, Pattern
+from typing import Generator, Pattern
 
 import pytest
 from _pytest.config import Config
@@ -64,7 +64,7 @@ def _fixture_clean_dir(tmp_path: Path) -> Generator[None, None, None]:
 
 @pytest.fixture(name="env", autouse=True)
 def _fixture_env() -> Generator[None, None, None]:
-    env_og: Dict[str, str] = os.environ.copy()
+    env_og: dict[str, str] = os.environ.copy()
 
     yield
 

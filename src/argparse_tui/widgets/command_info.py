@@ -17,7 +17,7 @@ class CommandMetadata(DataTable):
         self,
         command_schema: CommandSchema,
         name: str | None = None,
-        id: str | None = None,
+        id: str | None = None,  # pylint: disable=redefined-builtin # noqa: A002
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
@@ -59,7 +59,7 @@ class CommandInfo(ModalScreen):
         self,
         command_schema: CommandSchema,
         name: str | None = None,
-        id: str | None = None,
+        id: str | None = None,  # pylint: disable=redefined-builtin # noqa: A002
         classes: str | None = None,
     ) -> None:
         super().__init__(

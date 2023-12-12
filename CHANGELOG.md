@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.2.4 - 2023-12-12
+
+### :clap: Features
+
+- `build_tui` and moar tests
+
+### :fist: Fixes
+
+- Regression introduced in 0.2.3
+
+SLOC Analysis:
+
+| Directory        |   Empty |   Comment |   Docstring |   Code |   Statements |
+|------------------|---------|-----------|-------------|--------|--------------|
+| src/argparse_tui |     322 |       129 |         188 |   1705 |         1021 |
+| tests            |      63 |         0 |          11 |    231 |          125 |
+
 ## 0.2.3 - 2023-12-11
 
 ### :fist: Fixes

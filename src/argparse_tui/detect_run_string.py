@@ -16,8 +16,7 @@ def get_orig_argv() -> list[str]:
 
     ctypes.pythonapi.Py_GetArgcArgv(ctypes.byref(_argc), ctypes.byref(_argv))
 
-    argv = _argv[: _argc.value]
-    return argv
+    return _argv[: _argc.value]
 
 
 def detect_run_string(path=None, _main=sys.modules["__main__"]) -> str:
@@ -37,10 +36,7 @@ def detect_run_string(path=None, _main=sys.modules["__main__"]) -> str:
         # Executed a file, like "python app.py".
         file_path = shlex.quote(os.path.basename(path))
         argv = get_orig_argv()
-        if argv[0] == "python":
-            prefix = f"{argv[0]} "
-        else:
-            prefix = ""
+        prefix = f"{argv[0]} " if argv[0] == "python" else ""
         return f"{prefix}{file_path}"
 
     # Executed a module, like "python -m example".

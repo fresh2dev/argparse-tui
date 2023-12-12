@@ -79,7 +79,7 @@ class CommandForm(Widget):
         command_schema: CommandSchema | None = None,
         command_schemas: dict[CommandName, CommandSchema] | None = None,
         name: str | None = None,
-        id: str | None = None,
+        id: str | None = None,  # pylint: disable=redefined-builtin # noqa: A002
         classes: str | None = None,
         disabled: bool = False,
     ):
@@ -211,11 +211,12 @@ class CommandForm(Widget):
     def focus(self, scroll_visible: bool = True):
         if self.first_control is not None:
             return self.first_control.focus()
+        return None
 
     @on(Input.Changed, ".command-form-filter-input")
     def apply_filter(self, event: Input.Changed) -> None:
         filter_query = event.value
         all_controls = self.query(ParameterControls)
-        for control in all_controls:
+        for control in all_controls:  # pylint: disable=not-an-iterable
             filter_query = filter_query.casefold()
             control.apply_filter(filter_query)

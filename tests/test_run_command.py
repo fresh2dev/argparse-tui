@@ -10,7 +10,7 @@ from argparse_tui.schemas import (
 )
 
 
-@pytest.fixture
+@pytest.fixture()
 def command_schema():
     return CommandSchema(
         name=CommandName("test"),
@@ -40,7 +40,7 @@ def command_schema():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def command_schema_with_subcommand(command_schema):
     command_schema.subcommands = {
         "sub": CommandSchema(
@@ -59,7 +59,7 @@ def command_schema_with_subcommand(command_schema):
     return command_schema
 
 
-@pytest.fixture
+@pytest.fixture()
 def user_command_data_no_subcommand():
     return UserCommandData(
         name=CommandName("test"),
@@ -85,7 +85,7 @@ def user_command_data_no_subcommand():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def user_command_data_with_subcommand(user_command_data_no_subcommand):
     return UserCommandData(
         name=CommandName("test"),

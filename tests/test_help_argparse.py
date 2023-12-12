@@ -6,7 +6,7 @@ from argparse_tui import add_tui_argument, add_tui_command
 
 def test_default_help(capsys):
     parser = argparse.ArgumentParser()
-    add_tui_command(parser)
+    _ = add_tui_command(parser)
     parser.print_help()
 
     result = capsys.readouterr()
@@ -15,7 +15,7 @@ def test_default_help(capsys):
 
 def test_custom_command(capsys):
     parser = argparse.ArgumentParser()
-    add_tui_command(parser, command="custom")
+    _ = add_tui_command(parser, command="custom")
     parser.print_help()
 
     result = capsys.readouterr()
@@ -24,7 +24,7 @@ def test_custom_command(capsys):
 
 def test_custom_help(capsys):
     parser = argparse.ArgumentParser()
-    add_tui_command(parser, help="Custom help")
+    _ = add_tui_command(parser, help="Custom help")
     parser.print_help()
 
     result = capsys.readouterr()
