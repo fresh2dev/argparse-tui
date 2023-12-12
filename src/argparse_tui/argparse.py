@@ -62,17 +62,6 @@ def introspect_argparse_parser(
             if param_type is None and param.default is not None:
                 param_type = type(param.default)
 
-            nargs: int = (
-                0
-                if param.nargs is None and is_flag
-                else 1
-                if param.nargs in [None, "?"]
-                else -1
-                if param.nargs in ["+", "*", argparse.REMAINDER]
-                else int(param.nargs)
-            )
-            multi_value: bool = nargs < 0 or nargs > 1
-
             is_counting: bool = False
             is_multiple: bool = False
             is_flag: bool = False
@@ -82,8 +71,6 @@ def introspect_argparse_parser(
 
             if isinstance(param, argparse._CountAction):
                 is_counting = True
-            elif isinstance(param, argparse._AppendAction) and nargs <= 1:
-                is_multiple = True
             elif isinstance(param, argparse._StoreConstAction):
                 is_flag = True
             elif (
@@ -109,10 +96,25 @@ def introspect_argparse_parser(
                     ]
                     secondary_opts = [x for x in param.option_strings if x not in opts]
 
+            nargs: int = (
+                0
+                if param.nargs is None and is_flag
+                else 1
+                if param.nargs is None or param.nargs == "?"
+                else -1
+                if param.nargs in ["+", "*", argparse.REMAINDER]
+                else int(param.nargs)
+            )
+            multi_value: bool = nargs < 0 or nargs > 1
+
+            if isinstance(param, argparse._AppendAction) and nargs <= 1:
+                # TODO: support 'append' action params with nargs > 1.
+                is_multiple = True
+
             # look for these "tags" in the help text: "secret"
             # if present, set variables and remove from the help text.
             is_secret: bool = False
-            param_help: str = param.help
+            param_help: str | None = param.help
             if param_help:
                 param_help = param_help.replace("%(default)s", str(param.default))
 
