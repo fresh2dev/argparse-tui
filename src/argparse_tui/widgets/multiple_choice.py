@@ -43,7 +43,7 @@ class MultipleChoice(Widget):
         options: list[TextType],
         defaults: list[tuple[Any]] | None = None,
         name: str | None = None,
-        id: str | None = None,
+        id: str | None = None,  # pylint: disable=redefined-builtin # noqa: A002
         classes: str | None = None,
         disabled: bool = False,
     ):
@@ -68,7 +68,7 @@ class MultipleChoice(Widget):
     def checkbox_toggled(self) -> None:
         checkboxes = self.query(Checkbox)
         selected = []
-        for checkbox in checkboxes:
+        for checkbox in checkboxes:  # pylint: disable=not-an-iterable
             if checkbox.value is True:
                 selected.append(checkbox)
         self.selected = [(checkbox.label.plain,) for checkbox in selected]
@@ -76,7 +76,7 @@ class MultipleChoice(Widget):
 
     def select_by_label(self, label: str) -> None:
         checkboxes = self.query(Checkbox)
-        for checkbox in checkboxes:
+        for checkbox in checkboxes:  # pylint: disable=not-an-iterable
             checkbox.value = checkbox.label == label
 
     def action_next_button(self) -> None:

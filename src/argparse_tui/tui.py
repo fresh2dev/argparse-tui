@@ -59,7 +59,7 @@ class CommandBuilder(Screen):
         app_version: str | None,
         is_grouped_cli: bool,
         name: str | None = None,
-        id: str | None = None,
+        id: str | None = None,  # pylint: disable=redefined-builtin # noqa: A002
         classes: str | None = None,
     ):
         super().__init__(name, id, classes)
@@ -255,7 +255,7 @@ class Tui(App):
         self.post_run_command: list[str] = []
         self.post_run_command_redacted: str = ""
 
-        root_cmd_name: str = list(command_schemas.keys())[0]
+        root_cmd_name: str = next(iter(command_schemas.keys()))
 
         if command_filter and command_schemas[root_cmd_name].subcommands:
             matching_schemas: dict[CommandName, CommandSchema] = {
@@ -267,7 +267,7 @@ class Tui(App):
                 (x in command_filter) for x in ("*", "?")
             ):
                 command_schemas = matching_schemas
-                root_cmd_name = list(command_schemas.keys())[0]
+                root_cmd_name = next(iter(command_schemas.keys()))
                 #  app_name = app_name + " " + root_cmd_name
             elif matching_schemas:
                 command_schemas[root_cmd_name].subcommands = matching_schemas
@@ -286,7 +286,8 @@ class Tui(App):
     @classmethod
     def from_schemas(cls, *args: CommandSchema, **kwargs) -> Tui:
         if not args:
-            raise ValueError("No schemas provided.")
+            msg = "No schemas provided."
+            raise ValueError(msg)
 
         root_schema = args[0]
 

@@ -6,7 +6,7 @@ from textual.app import App
 from argparse_tui.argparse import build_tui
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_app():
     parser = argparse.ArgumentParser()
     _ = parser.add_argument("pos_arg")

@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from dataclasses import dataclass, field
 from functools import partial
-from typing import Any, NewType, Sequence, Type
+from typing import Any, Iterable, NewType, Sequence, Type
 
 
 def generate_unique_id():
@@ -15,7 +15,7 @@ class MultiValueParamData:
     values: list[tuple[int | float | str]]
 
     @staticmethod
-    def process_cli_option(value) -> "MultiValueParamData":
+    def process_cli_option(value) -> MultiValueParamData:
         if value is None:
             value = MultiValueParamData([])
         elif isinstance(value, tuple):
@@ -43,13 +43,13 @@ class ChoiceSchema:
 @dataclass
 class ArgumentSchema:
     name: str | list[str]
-    type: Type[Any] | Sequence[Type[Any]] | None = None
+    type: type[Any] | Sequence[type[Any]] | None = None  # noqa: A003
     required: bool = False
-    help: str | None = None
+    help: str | None = None  # noqa: A003
     key: str | tuple[str] = field(default_factory=generate_unique_id)
     default: MultiValueParamData | Any | None = None
     value: MultiValueParamData | Any | None = None
-    choices: Sequence[str] | None = None
+    choices: Iterable[str] | None = None
     multiple: bool = False
     multi_value: bool = False
     nargs: int = 1
@@ -66,7 +66,7 @@ class ArgumentSchema:
         elif not isinstance(self.value, MultiValueParamData):
             self.value = MultiValueParamData.process_cli_option(self.value)
 
-        default_type: list[Type[Any]] = [str]
+        default_type: list[type[Any]] = [str]
 
         if not self.type:
             self.type = default_type
@@ -85,7 +85,7 @@ class ArgumentSchema:
                         break
                 else:
                     self.type = default_type
-        elif isinstance(self.type, Type):
+        elif isinstance(self.type, type):
             self.type = [self.type]
         elif len(self.type) == 1 and isinstance(self.type[0], ChoiceSchema):
             # if there is only one type and it is a 'ChoiceSchema':

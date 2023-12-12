@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import functools
 from functools import partial
-from typing import Any, Callable, Iterable, Type, TypeVar, Union, cast
+from typing import Any, Callable, Iterable, TypeVar, Union, cast
 
 from rich.text import Text
 from textual import on
@@ -43,7 +43,7 @@ class ParameterControls(Widget):
         self,
         schema: ArgumentSchema | OptionSchema,
         name: str | None = None,
-        id: str | None = None,
+        id: str | None = None,  # pylint: disable=redefined-builtin # noqa: A002
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
@@ -272,6 +272,7 @@ class ParameterControls(Widget):
             )  # TODO: We should only return "" when user selects a checkbox - needs custom widget.
         elif isinstance(control, Checkbox):
             return control.value
+        return None
 
     def get_values(self) -> MultiValueParamData:
         # We can find all relevant control widgets by querying the parameter schema
@@ -282,7 +283,7 @@ class ParameterControls(Widget):
             tuple_size: int,
         ) -> list[tuple[int | float | str, ...]]:
             if tuple_size == 0:
-                return [tuple()]
+                return [()]
             elif tuple_size == -1:
                 # Unspecified number of arguments as per Click docs.
                 tuple_size = 1
@@ -321,7 +322,7 @@ class ParameterControls(Widget):
 
     def get_control_method(
         self,
-        param_type: Type[Any],
+        param_type: type[Any],
     ) -> Callable[[Any, Text, bool, OptionSchema | ArgumentSchema, str], Widget]:
         if isinstance(param_type, ChoiceSchema):
             return partial(self.make_choice_control, choices=param_type.choices)
@@ -356,10 +357,7 @@ class ParameterControls(Widget):
         schema: OptionSchema | ArgumentSchema,
         control_id: str,
     ) -> Widget:
-        if default.values:
-            default = default.values[0][0]
-        else:
-            default = ValueNotSupplied()
+        default = default.values[0][0] if default.values else ValueNotSupplied()
 
         control = Checkbox(
             label,
@@ -402,7 +400,7 @@ class ParameterControls(Widget):
     @staticmethod
     def _make_command_form_control_label(
         name: str | list[str],
-        types: list[Type[Any]],
+        types: list[type[Any]],
         is_option: bool,
         is_required: bool,
         multiple: bool,
@@ -410,11 +408,9 @@ class ParameterControls(Widget):
         names: list[str] = [name] if isinstance(name, str) else name
 
         names = Text(" / ", style="dim").join([Text(n) for n in names])
-        text = Text.from_markup(
+        return Text.from_markup(
             f"{names}[dim]{' multiple' if multiple else ''} <{', '.join(x.__name__ for x in types)}>[/] {' [b red]*[/]required' if is_required else ''}",
         )
-
-        return text
 
     def focus(self, scroll_visible: bool = True):
         if self.first_control is not None:

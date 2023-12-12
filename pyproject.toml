@@ -107,6 +107,10 @@ disable = [
     "missing-class-docstring",
     "missing-module-docstring",
     "missing-function-docstring",
+    # specific to this project:
+    "unused-argument",
+    "attribute-defined-outside-init",
+    "protected-access",
 ]
 
 [tool.isort]
