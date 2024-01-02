@@ -1,15 +1,14 @@
+/.devbox
 **/secrets
 !**/*.keep
 **/*.tmp
 **/.vscode
 **/.DS_store
-.python-version
-
-/public
-
+/.venv
 /requirements.txt
 /dist
 /build
+/public
 
 *.pyc
 **/.ipynb_checkpoints

@@ -1,4 +1,5 @@
 **/.git
+/.devbox
 
 **/secrets
 !**/*.keep

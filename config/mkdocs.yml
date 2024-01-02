@@ -22,10 +22,9 @@ nav:
   - Reference: reference/
   - Changelog: changelog.md
   - License: license.md
-  - Ideas: ideas.md
   - '<- f2dv.com':
       - '/projects': 'https://www.f2dv.com/projects/'
-      - '/fund': 'https://www.f2dv.com/fund/'
+      # - '/fund': 'https://www.f2dv.com/fund/'
 
 watch:
   - ../src

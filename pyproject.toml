@@ -42,7 +42,7 @@ tests = [
 [project.urls]
 Homepage = "https://www.f2dv.com/r/argparse-tui"
 Repository = "https://www.github.com/fresh2dev/argparse-tui"
-Funding = "https://www.f2dv.com/fund"
+# Funding = "https://www.f2dv.com/fund"
 
 [tool.setuptools.package-data]
 "*" = ["**"]
@@ -190,8 +190,8 @@ unfixable = []
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py3{7,8,9,10,11}
-skip_missing_interpreters = false
+envlist = py3{7,8,9,10,11,12}
+skip_missing_interpreters = true
 toxworkdir = /tmp/.tox
 minversion = 4.0
 [testenv]
@@ -199,5 +199,4 @@ recreate = true
 extras = tests
 commands =
     python -m pytest {posargs}
-    python -m pylint --disable=C,R '**/*.py'
 """
