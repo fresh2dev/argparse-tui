@@ -1,0 +1,86 @@
+---
+name: 'Build and Publish Python Package'
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - 'v?[0-9]+.*'
+
+permissions:
+  contents: write
+
+jobs:
+
+  test-python-package:
+    # needs: ['setup']
+    name: Test with Python v${{ matrix.python-version }}
+    if: >
+      github.ref_type == 'tag'
+      || format('refs/heads/{0}', github.event.repository.default_branch) == github.ref
+    runs-on: 'ubuntu-latest'
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+      max-parallel: 3
+      fail-fast: true
+    steps:
+      ### Checkout
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+
+
+      # - uses: fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+      # - uses: ./
+      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+
+      - name: Set up Python v${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Test Python Project using Python v${{ matrix.python-version }}
+        run: |
+          tox --workdir ${{ runner.temp }}/tox -e py
+
+  build-publish-python:
+    # needs: ['setup']
+    runs-on: 'ubuntu-latest'
+    env:
+      DIST_DIR: ${{ runner.temp }}/dist
+    steps:
+      ### Checkout
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+
+      # - uses: fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+      # - uses: ./
+      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+
+      - name: Test Python Project
+        run: |
+          tox --workdir ${{ runner.temp }}/tox -e py
+
+      - name: Build Python Project
+        run: |
+          rm -rf $DIST_DIR
+          pyproject-build -o $DIST_DIR
+          twine check --strict $DIST_DIR/*
+
+      - name: Publish Python Project [dev]
+        run: |
+          twine upload --verbose --non-interactive --repository dev $DIST_DIR/*
+
+      - name: Publish Python Project
+        if: >
+          github.ref_type == 'tag'
+        run: |
+          twine upload --verbose --non-interactive --repository codeberg $DIST_DIR/*
+          twine upload --verbose --non-interactive --repository testpypi $DIST_DIR/*
+          twine upload --verbose --non-interactive --repository pypi $DIST_DIR/*

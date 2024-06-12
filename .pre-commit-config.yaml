@@ -1,18 +1,34 @@
+---
 repos:
-  - repo: local
+  - repo: 'https://github.com/pre-commit/pre-commit-hooks'
+    rev: 'v4.5.0'
     hooks:
-      - id: myke-py-format
-        name: myke py format
-        entry: myke py format
-        description: Format Python project.
-        language: python
-        types: [python]
-        pass_filenames: false
-
-      - id: myke-py-check
-        name: myke py check --critical
-        entry: myke py check --critical
-        description: Check Python project for critical errors.
-        language: python
-        types: [python]
-        pass_filenames: false
+      - id: 'check-added-large-files'
+      - id: 'check-executables-have-shebangs'
+      # - id: check-json
+      - id: 'check-shebang-scripts-are-executable'
+      - id: 'check-merge-conflict'
+      - id: 'check-symlinks'
+      - id: 'check-toml'
+      - id: 'end-of-file-fixer'
+      - id: 'mixed-line-ending'
+      - id: 'trailing-whitespace'
+  # - repo: 'https://github.com/scop/pre-commit-shfmt'
+  #   rev: 'v3.8.0-1'
+  #   hooks:
+  #     - id: 'shfmt'
+  #       args: ['-w', '-s', '-i', '2']
+  # - id: 'myke-py-format'
+  #   name: 'myke py format'
+  #   entry: 'myke py format'
+  #   description: 'Format Python project.'
+  #   language: 'python'
+  #   types: ['python']
+  #   pass_filenames: false
+  # - id: 'myke-py-check'
+  #   name: 'myke py check --critical'
+  #   entry: 'myke py check --critical'
+  #   description: 'Check Python project for critical errors.'
+  #   language: 'python'
+  #   types: ['python']
+  #   pass_filenames: false

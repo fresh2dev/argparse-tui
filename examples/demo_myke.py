@@ -15,4 +15,3 @@ def goodbye(name, formal=False):
         print(f"Goodbye Ms. {name}. Have a good day.")
     else:
         print(f"Bye {name}!")
-
