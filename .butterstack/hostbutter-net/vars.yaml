@@ -1,0 +1,12 @@
+# Reusable variables specific to this environment and release.
+
+domain: "local.hostbutter.net"
+privateRegistry: "registry.local.hostbutter.net"
+
+puid: "1000"
+pgid: "1000"
+tz: "America/Chicago"
+
+subdomain: "www"
+routePrefix: "/r/argparse-tui"
+svcPort: 80

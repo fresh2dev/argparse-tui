@@ -1,0 +1,198 @@
+---
+name: 'Build and Publish Image'
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - 'v?[0-9]+.*'
+
+permissions:
+  contents: write
+
+jobs:
+  setup:
+    runs-on: 'ubuntu-latest'
+    steps:
+      ### Checkout
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+
+      # - uses: fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+      # - uses: ./
+      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+        with:
+          github-token: ${{ secrets.EGET_GITHUB_TOKEN }}
+
+      - run: |
+          kubectl cluster-info
+
+  # find-dockerfiles:
+  #   needs: ['setup']
+  #   runs-on: 'ubuntu-latest'
+  #   outputs:
+  #     matrix: ${{ steps.find-dockerfiles.outputs.matrix }}
+  #   steps:
+  #     - name: Check out repository code
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Find dockerfiles
+  #       id: find-dockerfiles
+  #       shell: python
+  #       run: |
+  #         import json
+  #         import os
+  #         from pathlib import Path
+  #         base_name = "Dockerfile"
+  #         matrix_includes = json.dumps({
+  #             "include": [
+  #                 {"dockerfile": x.name, "image_suffix": x.name[len(base_name):]}
+  #                 for x in Path.cwd().glob(f"{base_name}*")
+  #             ]
+  #         }, separators=(",", ":"))
+  #         with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+  #             f.write(f"matrix={matrix_includes}\n")
+
+  build-publish-image:
+    needs: ['setup']
+    # needs: ['setup', 'find-dockerfiles']
+    runs-on: 'ubuntu-latest'
+    env:
+      PRIVATE_REGISTRY_DEV: registry.local.hostbutter.net
+      PRIVATE_REGISTRY_PROD: registry.fresh2.dev
+    strategy:
+      # matrix: ${{ fromJson(needs.find-dockerfiles.outputs.matrix) }}
+      matrix:
+        include:
+          # - dockerfile: Dockerfile
+          #   image_suffix: ""
+          - dockerfile: Dockerfile-docs
+            image_suffix: "-docs"
+      fail-fast: true
+    steps:
+      ### Checkout
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+
+      ### Checkout
+      # - uses: fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+      # - uses: ./
+      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+
+      - name: Dump github context
+        run:   echo "$GITHUB_CONTEXT"
+        shell: bash
+        env:
+         GITHUB_CONTEXT: ${{ toJson(github) }}
+
+      - name: Dump env context
+        run:   echo "$env_context"
+        shell: bash
+        env:
+         env_context: ${{ tojson(env) }}
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: kubernetes
+          driver-opts: |
+            image=moby/buildkit:master
+            namespace=default
+            qemu.install=true
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          platforms: linux/amd64  #,linux/arm64
+          tags: |
+            ${{ env.PRIVATE_REGISTRY_DEV }}/${{ github.repository }}${{ matrix.image_suffix }}:${{ env.CI_COMMIT_SHORT_SHA }}
+          # TODO: try to implement docker build cache again when Gitea 1.22 or 1.23 is released:
+          # cache-from: type=gha,url=${{ env.ACTIONS_CACHE_URL }},token=${{ env.ACTIONS_RUNTIME_TOKEN }}
+          # cache-to: type=gha,mode=max,url=${{ env.ACTIONS_CACHE_URL }},token=${{ env.ACTIONS_RUNTIME_TOKEN }}
+
+      - name: Push image to Prod Registry
+        if: >
+          always()
+          && format('refs/heads/{0}', github.event.repository.default_branch) == github.ref
+        run: |
+          docker buildx imagetools create \
+            --tag ${{ env.PRIVATE_REGISTRY_PROD }}/${{ github.repository }}${{ matrix.image_suffix }}:$CI_COMMIT_SHORT_SHA \
+            ${{ env.PRIVATE_REGISTRY_DEV }}/${{ github.repository }}${{ matrix.image_suffix }}:$CI_COMMIT_SHORT_SHA
+
+  deploy-image:
+    needs: ['build-publish-image']
+    runs-on: 'ubuntu-latest'
+    env:
+      HOSTBUTTER_SITE_DEV: hostbutter-net
+      HOSTBUTTER_SITE_PROD: fresh2-dev
+    steps:
+      ### Checkout
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+
+      ### Checkout
+      # - uses: fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+      # - uses: ./
+      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+
+      - if: >
+          endsWith(github.repository, '/hostbutter')
+        name: Upgrade Hostbutter
+        run: |
+          pipx install -fe .
+
+      - name: Deploy Stack(s) [dev]
+        run: |
+          butter --site $HOSTBUTTER_SITE_DEV stack up
+
+      - name: Deploy Stack(s)
+        if: >
+          always()
+          && format('refs/heads/{0}', github.event.repository.default_branch) == github.ref
+        run: |
+          butter --site $HOSTBUTTER_SITE_PROD stack up
+
+  # promote-image:
+  #   if: >
+  #     github.ref_type == 'tag'
+  #   needs: ['build-publish-image']
+  #   runs-on: 'ubuntu-latest'
+  #   env:
+  #     SRC_REGISTRY: registry.local.hostbutter.net
+  #   strategy:
+  #     matrix:
+  #       image_name:
+  #         - ${{ github.repository }}
+  #       public_registry:
+  #         - docker.io
+  #         - ghcr.io
+  #     fail-fast: true
+  #   steps:
+  #     ### Checkout
+  #     - name: Check out repository code
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+  #         submodules: 'recursive'
+  #
+  #     ### Checkout
+  #     # - uses: fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+  #     # - uses: ./
+  #     - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+  #
+  #     - name: Push image to Cloud Registries on tag
+  #       run: |
+  #         docker buildx imagetools create --tag ${{ matrix.public_registry }}/${{ matrix.image_name }}:$CI_PROJECT_VERSION \
+  #           ${{ env.SRC_REGISTRY }}/${{ matrix.image_name }}:$CI_COMMIT_SHORT_SHA

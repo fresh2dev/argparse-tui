@@ -1,6 +1,8 @@
+!**/*.gitkeep
+
 /.devbox
+/.helmwave
 **/secrets
-!**/*.keep
 **/*.tmp
 **/.vscode
 **/.DS_store
@@ -22,3 +24,4 @@
 **/.pytest_cache
 **/.ropeproject
 **/.ruff_cache
+.aider*

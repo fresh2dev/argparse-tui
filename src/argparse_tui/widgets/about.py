@@ -90,9 +90,12 @@ class AboutDialog(TextDialog):
     """
 
     def __init__(self) -> None:
-        title = "About Argparse TUI"
+        title = "About"
         message = Text.from_markup(
-            f"Built with [[@click=app.visit('https://textualize.io')]]Textual[/] "
-            f"https://github.com/textualize/{constants.PACKAGE_NAME}[/]",
+            f"Built with [@click=app.visit('https://github.com/textualize/textual')]Textual[/] "
+            f"by [@click=app.visit('https://textualize.io')]Textualize[/].\n\n"
+            f"Modified for use with ArgParse by [@click=app.visit('https://f2dv.com')]Fresh2.dev[/].\n\n"
+            f"[@click=app.visit('https://github.com/fresh2dev/{constants.PACKAGE_NAME}')]"
+            f"https://github.com/fresh2dev/{constants.PACKAGE_NAME}[/]",
         )
         super().__init__(title, message)

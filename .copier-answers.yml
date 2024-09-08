@@ -1,9 +1,8 @@
 # Changes here will be overwritten by Copier
-_commit: e25680a
-_src_path: ssh://git@git.lokalhost.net:2222/donald/copier-f2dv-project.git
+_commit: a09a863
+_src_path: ssh://git@git.local.hostbutter.net/fresh2dev/copier-f2dv-project.git
 author_email: hello@f2dv.com
 author_name: Donald Mellenbruch
-ci_domain_name: lokalhost.net
 docs_slides_url: https://www.f2dv.com/s/argparse-tui
 docs_url: https://www.f2dv.com/r/argparse-tui
 funding_url: https://www.f2dv.com/fund
@@ -15,9 +14,7 @@ license_type: MIT
 package_name: argparse_tui
 project_description: Your Argparse CLI, now with a TUI.
 project_name: argparse-tui
-python_version: '3.7'
-repo_mirror: https://www.f2dv.com/r/argparse-tui
+python_version: '3.8'
 repo_name: fresh2dev/argparse-tui
 repo_owner: fresh2dev
 repo_url: https://www.github.com/fresh2dev/argparse-tui
-

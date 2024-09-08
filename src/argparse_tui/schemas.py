@@ -85,7 +85,7 @@ class ArgumentSchema:
                         break
                 else:
                     self.type = default_type
-        elif isinstance(self.type, type):
+        elif isinstance(self.type, type) or callable(self.type):
             self.type = [self.type]
         elif len(self.type) == 1 and isinstance(self.type[0], ChoiceSchema):
             # if there is only one type and it is a 'ChoiceSchema':

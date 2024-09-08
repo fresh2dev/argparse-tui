@@ -1,12 +1,11 @@
 site_name: "argparse-tui"
 site_description: "argparse-tui Docs"
-site_url: !ENV [MKDOCS_SITE_URL, "https://www.f2dv.com/r/argparse-tui"]
+site_url: "https://www.f2dv.com/r/argparse-tui"
 repo_url: "https://www.github.com/fresh2dev/argparse-tui"
 repo_name: "fresh2dev/argparse-tui"
 edit_uri: "edit/main/docs"
 # edit_uri_template: "src/branch/main/docs/{path}"
-docs_dir: "../docs"
-site_dir: "../public"
+docs_dir: "docs"
 
 copyright: '<a href="https://www.fresh2.dev/"><img src="https://img.fresh2.dev/fresh2dev.svg" style="height: 3em; margin-right: 1em; filter: invert(100%);"></img></a> &copy; 2023 <a rel="license" target="_blank" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0; margin-left: 1em;" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a>'
 extra:
@@ -19,6 +18,9 @@ extra:
 ## https://www.mkdocs.org/user-guide/writing-your-docs/#configure-pages-and-navigation
 nav:
   - Home: index.md
+  - Articles:
+      - Examples: 'page/examples.ipynb'
+      - 'page/related.md'
   - Reference: reference/
   - Changelog: changelog.md
   - License: license.md
@@ -27,21 +29,21 @@ nav:
       # - '/fund': 'https://www.f2dv.com/fund/'
 
 watch:
-  - ../src
+  - ./src
 
 theme:
   name: material
   language: en
-  custom_dir: overrides
+  custom_dir: config/overrides
   palette:
     # https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/#primary-color
     - scheme: slate
-      primary: pink
+      primary: deep purple
       toggle:
         icon: material/toggle-switch-off-outline
         name: Switch to light mode
     - scheme: default
-      primary: pink
+      primary: deep purple
       toggle:
         icon: material/toggle-switch
         name: Switch to dark mode
@@ -79,6 +81,7 @@ markdown_extensions:
   - pymdownx.keys
   - pymdownx.mark
   - pymdownx.tilde
+  - pymdownx.snippets
 
 plugins:
   - search
@@ -97,19 +100,22 @@ plugins:
         python:
           paths: ["src"]
           options:
-            show_bases: false
-            show_source: false
-            members_order: 'alphabetical'  # 'source'
+            docstring_section_style: spacy
             docstring_style: google
-            show_submodules: false
+            members_order: 'alphabetical'  # 'source'
+            merge_init_into_class: true
+            separate_signature: true
+            show_bases: false
+            show_category_heading: true
+            show_if_no_docstring: false
+            show_object_full_path: false
+            show_root_full_path: false
+            show_root_heading: false
+            show_root_members_full_path: false
+            show_root_toc_entry: false
             show_signature: true
             show_signature_annotations: true
-            separate_signature: true
-            merge_init_into_class: true
-            show_if_no_docstring: false
-            show_root_heading: false
-            show_root_toc_entry: false
-            show_root_full_path: false
-            show_root_members_full_path: false
-            show_object_full_path: false
-            show_category_heading: true
+            show_source: false
+            show_submodules: false
+            signature_corssrefs: true
+            unwrap_annotated: true

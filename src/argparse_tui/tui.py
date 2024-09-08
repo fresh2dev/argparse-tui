@@ -43,11 +43,13 @@ class CommandBuilder(Screen):
         Binding(key="ctrl+y", action="copy_command_string", description="Copy Command"),
         Binding(
             key="ctrl+t,escape",
-            action="focus_command_tree",
+            action="app.focus_command_tree",
             description="Focus Command Tree",
         ),
-        Binding(key="ctrl+o,?", action="show_command_info", description="Command Info"),
-        Binding(key="ctrl+s,i,/", action="focus('search')", description="Search"),
+        Binding(
+            key="ctrl+o,?", action="app.show_command_info", description="Command Info"
+        ),
+        Binding(key="ctrl+s,i,/", action="app.focus('search')", description="Search"),
         Binding(key="f1", action="about", description="About"),
         Binding("q", "exit", show=False),
     ]
