@@ -1,5 +1,22 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
+## 0.2.5 - 2024-09-08
+
+**Full Changelog**: https://github.com/fresh2dev/argparse-tui/compare/0.2.4...0.2.5
+
+### :fist: Fixes
+
+- Properly format text in 'about' widget
+- Prefix binding actions with app namespace
+- Tweak the styling to make the sidebar less greedy
+- Allow functions to be used as arg types
+
+### :metal: Other
+
+- bump: Textual 0.54
+
 ## 0.2.4 - 2023-12-12
 
 ### :clap: Features
@@ -10,25 +27,11 @@
 
 - Regression introduced in 0.2.3
 
-SLOC Analysis:
-
-| Directory        |   Empty |   Comment |   Docstring |   Code |   Statements |
-|------------------|---------|-----------|-------------|--------|--------------|
-| src/argparse_tui |     322 |       129 |         188 |   1705 |         1021 |
-| tests            |      63 |         0 |          11 |    231 |          125 |
-
 ## 0.2.3 - 2023-12-11
 
 ### :fist: Fixes
 
 - Decouple `multi_value` and `multiple`.
-
-SLOC Analysis:
-
-| Directory        |   Empty |   Comment |   Docstring |   Code |   Statements |
-|------------------|---------|-----------|-------------|--------|--------------|
-| src/argparse_tui |     318 |       128 |         164 |   1693 |         1020 |
-| tests            |      56 |         0 |          11 |    211 |          108 |
 
 ## 0.2.2 - 2023-10-29
 
