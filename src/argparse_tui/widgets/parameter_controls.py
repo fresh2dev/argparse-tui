@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import functools
 from functools import partial
-from typing import Any, Callable, Iterable, TypeVar, Union, cast
+from typing import Any, Callable, Iterable, Union, cast
 
 from rich.text import Text
 from textual import on
@@ -10,12 +10,19 @@ from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.css.query import NoMatches
 from textual.widget import Widget
-from textual.widgets import Button, Checkbox, Input, Label, Select, Static
+from textual.widgets import (
+    Button,
+    Checkbox,
+    Input,
+    Label,
+    Select,
+    Static,
+)
 
 from ..schemas import ArgumentSchema, ChoiceSchema, MultiValueParamData, OptionSchema
 from ..widgets.multiple_choice import MultipleChoice
 
-ControlWidgetType: TypeVar = Union[Input, Checkbox, MultipleChoice, Select]
+ControlWidgetType = Union[Input, Checkbox, MultipleChoice, Select[str]]
 
 
 class ControlGroup(Vertical):
@@ -193,8 +200,8 @@ class ParameterControls(Widget):
         if help_text:
             yield Static(help_text, classes="command-form-control-help-text")
 
-    def make_widget_group(self) -> Iterable[Widget]:
-        # For this option, yield a single set of widgets required to receive user input for it.
+    def make_widget_group(self) -> Iterable[ControlWidgetType]:
+        """For this option, yield a single set of widgets required to receive user input for it."""
         schema = self.schema
         default = schema.value
         parameter_type = schema.type
@@ -339,7 +346,7 @@ class ParameterControls(Widget):
         multiple: bool,
         schema: OptionSchema | ArgumentSchema,
         control_id: str,
-    ) -> Widget:
+    ) -> Iterable[ControlWidgetType]:
         control = Input(
             classes=f"command-form-input {control_id}",
             password=schema.secret,
@@ -356,7 +363,7 @@ class ParameterControls(Widget):
         multiple: bool,
         schema: OptionSchema | ArgumentSchema,
         control_id: str,
-    ) -> Widget:
+    ) -> Iterable[ControlWidgetType]:
         default = default.values[0][0] if default.values else ValueNotSupplied()
 
         control = Checkbox(
@@ -376,7 +383,7 @@ class ParameterControls(Widget):
         schema: OptionSchema | ArgumentSchema,
         control_id: str,
         choices: list[str],
-    ) -> Widget:
+    ) -> Iterable[ControlWidgetType]:
         # The MultipleChoice widget is only for single-valued parameters.
         if schema.nargs != 1:
             multiple = False
@@ -390,7 +397,7 @@ class ParameterControls(Widget):
             yield multi_choice
             return multi_choice
         else:
-            select = Select(
+            select = Select[str](
                 [(choice, choice) for choice in choices],
                 classes=f"{control_id} command-form-select",
             )
