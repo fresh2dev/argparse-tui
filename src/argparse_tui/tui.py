@@ -7,12 +7,13 @@ from contextlib import suppress
 from fnmatch import fnmatch
 from pathlib import Path
 from subprocess import run
+from typing import Any
 from webbrowser import open as open_url
 
 from rich.console import Console
 from rich.highlighter import ReprHighlighter
 from rich.text import Text
-from textual import events, on
+from textual import on
 from textual.app import App, AutopilotCallbackType, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical, VerticalScroll
@@ -170,9 +171,6 @@ class CommandBuilder(Screen[None]):
 
         self.app.push_screen(AboutDialog())
 
-    async def on_mount(self, event: events.Mount) -> None:
-        await self._refresh_command_form()
-
     async def _refresh_command_form(self, node: TreeNode[CommandSchema]) -> None:
         selected_command = node.data
         if selected_command is None:
@@ -203,18 +201,21 @@ class CommandBuilder(Screen[None]):
         description_box = self.query_one("#home-command-description", Static)
         description_text = command.docstring or ""
         description_text = description_text.lstrip()
-        description_text = f"[b]{node.label if self.is_grouped_cli else self.app_name}[/]\n{description_text}"
+        description_text = f"[b]{command.name if self.is_grouped_cli else self.app_name}[/]\n{description_text}"
         description_box.update(description_text)
 
     def _update_execution_string_preview(self) -> None:
         """Update the preview box showing the command string to be executed"""
-        command_name_syntax_style = self.get_component_rich_style("command-name-syntax")
-        prefix = Text(f"{self.click_app_name} ", command_name_syntax_style)
-        new_value = self.command_data.to_cli_string(include_root_command=False)
-        highlighted_new_value = Text.assemble(prefix, self.highlighter(new_value))
-        prompt_style = self.get_component_rich_style("prompt")
-        preview_string = Text.assemble(("$ ", prompt_style), highlighted_new_value)
-        self.query_one("#home-exec-preview-static", Static).update(preview_string)
+        if self.command_data is not None:
+            command_name_syntax_style = self.get_component_rich_style(
+                "command-name-syntax",
+            )
+            prefix = Text(f"{self.app_name} ", command_name_syntax_style)
+            new_value = self.command_data.to_cli_string(include_root_command=False)
+            highlighted_new_value = Text.assemble(prefix, self.highlighter(new_value))
+            prompt_style = self.get_component_rich_style("prompt")
+            preview_string = Text.assemble(("$ ", prompt_style), highlighted_new_value)
+            self.query_one("#home-exec-preview-static", Static).update(preview_string)
 
     async def _update_form_body(self, node: TreeNode[CommandSchema]) -> None:
         # self.query_one(Pretty).update(node.data)
@@ -292,14 +293,12 @@ class Tui(App):
 
         return cls(schemas, **kwargs)
 
-    def on_mount(self):
-        self.push_screen(
-            CommandBuilder(
-                self.command_schemas,
-                app_name=self.app_name,
-                app_version=self.app_version,
-                is_grouped_cli=self.is_grouped_cli,
-            ),
+    def get_default_screen(self) -> CommandBuilder:
+        return CommandBuilder(
+            self.command_schemas,
+            app_name=self.app_name,
+            app_version=self.app_version,
+            is_grouped_cli=self.is_grouped_cli,
         )
 
     @on(Button.Pressed, "#home-exec-button")
@@ -309,13 +308,20 @@ class Tui(App):
 
     def run(
         self,
-        *,
+        *args: Any,
         headless: bool = False,
         size: tuple[int, int] | None = None,
         auto_pilot: AutopilotCallbackType | None = None,
+        **kwargs: Any,
     ) -> None:
         try:
-            super().run(headless=headless, size=size, auto_pilot=auto_pilot)
+            super().run(
+                *args,
+                headless=headless,
+                size=size,
+                auto_pilot=auto_pilot,
+                **kwargs,
+            )
         finally:
             if self.post_run_command:
                 console = Console()
