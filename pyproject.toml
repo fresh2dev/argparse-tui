@@ -34,7 +34,6 @@ tests = [
     "pytest-html==4.*",
     "pytest-sugar==1.*",
     "pytest-custom-exit-code==0.3.*",
-    "pylint==3.*",
     "packaging==23.*",
     "mockish>=0.1.1,<2",
 ]
@@ -64,101 +63,77 @@ reportUnnecessaryTypeIgnoreComment = "warning"
 reportImplicitOverride = "warning"
 reportShadowedImports = "warning"
 
-[tool.pylint.main]
-ignore-paths = "^(?!src|tests).*$"
-ignored-modules = []
-[tool.pylint.messages_control]
-max-line-length = 88
-disable = [
-    "fixme",
-    "invalid-name",
-    "line-too-long",
-    "unnecessary-pass",
-    "unnecessary-ellipsis",
-    "too-few-public-methods",
-    "import-outside-toplevel",
-    "missing-class-docstring",
-    "missing-module-docstring",
-    "missing-function-docstring",
-    # specific to this project:
-    "unused-argument",
-    "attribute-defined-outside-init",
-    "protected-access",
-]
-
-[tool.isort]
-profile = "black"
-line_length = 88
-src_paths = ["src", "tests"]
-float_to_top = true
-include_trailing_comma = true
-honor_noqa = true
-quiet = true
-
 [tool.ruff]
 include = ["src/**/*.py", "tests/**/*.py"]
-
 respect-gitignore = true
+# Enable preview features.
+preview = true
+# Enable unsafe fixes.
+unsafe-fixes = true
 
-# Same as Black.
-line-length = 88
-indent-width = 4
-
-target-version = "py37"
-
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+[tool.ruff.format]
+# Enable reformatting of code snippets in docstrings.
+docstring-code-format = true
+docstring-code-line-length = 'dynamic'
 
 [tool.ruff.lint]
 select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    # "D",  # pydocstyle
-    "F",  # pyflakes
-    "UP", # pyupgrade
-    # "I",  # isort (missing-required-import)
-    "C4",  # flake8-comprehensions
-    "B",  # flake8-bugbear
-    "BLE",  # flake8-blind-except
-    "DTZ",  # flake8-datetimez
-    "EM",  # flake8-errmsg
-    "ISC",  # flake8-implicit-str-concat
-    "G",  # flake8-logging-format
-    "PIE",  # flake8-pie
-    "RSE",  # flake8-raise
-    # "ANN",# flake8-annotations
-    "A",# flake8-builtins
-    "COM",# flake8-commas
-    "PT",# flake8-pytest-style
-    "Q",# flake8-quotes
-    "RET",# flake8-return
-    "SIM",# flake8-simplify
-    "ARG",# flake8-unused-arguments
-    "PTH",# flake8-use-pathlib
-    # "ERA",# eradicate
-    "PLW",# pylint-specific warnings
-    "PLE",# pylint-specific errors
-    "PLR",# pylint-specific refactors
-    "PLC",# pylint-specific conventions
-    "RUF",# ruff-specific
-    "TRY",# tryceratops
+    "A",       # flake8-builtins
+    "ARG",     # flake8-unused-arguments
+    "ASYNC",   # flake8-unused-arguments
+    "B",       # flake8-bugbear
+    "BLE",     # flake8-blind-except
+    "C4",      # flake8-comprehensions
+    "COM",     # flake8-commas
+    "DTZ",     # flake8-datetimez
+    "E",       # pycodestyle errors
+    "EM",      # flake8-errmsg
+    "F",       # pyflakes
+    "FIX",     # pyflakes
+    "FLY",     # pyflakes
+    "G",       # flake8-logging-format
+    "I",       # flake8-logging-format
+    "ISC",     # flake8-implicit-str-concat
+    "PERF",    # flake8-pie
+    "PIE",     # flake8-pie
+    "PLC",     # pylint-specific conventions
+    "PLE",     # pylint-specific errors
+    "PLR",     # pylint-specific refactors
+    "PLW",     # pylint-specific warnings
+    "PT",      # flake8-pytest-style
+    "PTH",     # flake8-use-pathlib
+    "Q",       # flake8-quotes
+    "RET",     # flake8-return
+    "RSE",     # flake8-raise
+    "RUF",     # ruff-specific
+    "SIM",     # flake8-simplify
+    "TRY",     # tryceratops
+    "UP",      # pyupgrade
+    "W",       # pycodestyle warnings
+    # "ANN",   # flake8-annotations
+    # "D",     # pydocstyle
+    # "ERA",   # eradicate
+    # "I",     # isort (missing-required-import)
 ]
 ignore = [
-    # "E501",  # line too long, handled by black
-    # "B008",  # do not perform function calls in argument defaults
-    "PLR0913",  # too many arguments (n > 5)
-    "PLR2004",  # magic value used in comparison
+    "E501",    # line too long, handled by black
+    "PLR0912", # too many branches
+    "PLR0913", # too many arguments (n > 5)
+    "PLR0915", # too many statements
+    "PLR2004", # magic value used in comparison
 ]
 
-# Avoid trying to fix flake8-bugbear (`B`) violations.
-# Allow autofix for all enabled rules (when `--fix`) is provided.
-# autofix F401=unused-imports
-fixable = ["W", "E", "COM", "F401"]
+fixable = [
+    "E",       # pycodestyle errors
+    "W",       # pycodestyle warnings
+    "COM",     # commas
+    "F401",    # unused-imports
+    "I001",    # unsorted-imports
+]
 unfixable = []
 
-# Ignore `E402` (import violations) in all `__init__.py` files, and in `path/to/file.py`.
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["E402", "F401"]
+# Ignore unused variables prefixed with an underscore.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.tox]
 legacy_tox_ini = """

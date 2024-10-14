@@ -21,9 +21,9 @@ jobs:
           fetch-depth: 0
           submodules: 'recursive'
 
-      # - uses: fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+      # - uses: fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
       # - uses: ./
-      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
         with:
           github-token: ${{ secrets.EGET_GITHUB_TOKEN }}
 
@@ -81,9 +81,9 @@ jobs:
           submodules: 'recursive'
 
       ### Checkout
-      # - uses: fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+      # - uses: fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
       # - uses: ./
-      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
 
       - name: Dump github context
         run:   echo "$GITHUB_CONTEXT"
@@ -92,7 +92,7 @@ jobs:
          GITHUB_CONTEXT: ${{ toJson(github) }}
 
       - name: Dump env context
-        run:   echo "$env_context"
+        run: echo "$env_context"
         shell: bash
         env:
          env_context: ${{ tojson(env) }}
@@ -115,9 +115,8 @@ jobs:
           platforms: linux/amd64  #,linux/arm64
           tags: |
             ${{ env.PRIVATE_REGISTRY_DEV }}/${{ github.repository }}${{ matrix.image_suffix }}:${{ env.CI_COMMIT_SHORT_SHA }}
-          # TODO: try to implement docker build cache again when Gitea 1.22 or 1.23 is released:
-          # cache-from: type=gha,url=${{ env.ACTIONS_CACHE_URL }},token=${{ env.ACTIONS_RUNTIME_TOKEN }}
-          # cache-to: type=gha,mode=max,url=${{ env.ACTIONS_CACHE_URL }},token=${{ env.ACTIONS_RUNTIME_TOKEN }}
+          cache-from: type=gha,url=${{ env.ACTIONS_CACHE_URL }},token=${{ env.ACTIONS_RUNTIME_TOKEN }}
+          cache-to: type=gha,mode=max,url=${{ env.ACTIONS_CACHE_URL }},token=${{ env.ACTIONS_RUNTIME_TOKEN }}
 
       - name: Push image to Prod Registry
         if: >
@@ -143,9 +142,9 @@ jobs:
           submodules: 'recursive'
 
       ### Checkout
-      # - uses: fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+      # - uses: fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
       # - uses: ./
-      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
 
       - if: >
           endsWith(github.repository, '/hostbutter')
@@ -164,35 +163,3 @@ jobs:
         run: |
           butter --site $HOSTBUTTER_SITE_PROD stack up
 
-  # promote-image:
-  #   if: >
-  #     github.ref_type == 'tag'
-  #   needs: ['build-publish-image']
-  #   runs-on: 'ubuntu-latest'
-  #   env:
-  #     SRC_REGISTRY: registry.local.hostbutter.net
-  #   strategy:
-  #     matrix:
-  #       image_name:
-  #         - ${{ github.repository }}
-  #       public_registry:
-  #         - docker.io
-  #         - ghcr.io
-  #     fail-fast: true
-  #   steps:
-  #     ### Checkout
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
-  #         submodules: 'recursive'
-  #
-  #     ### Checkout
-  #     # - uses: fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
-  #     # - uses: ./
-  #     - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
-  #
-  #     - name: Push image to Cloud Registries on tag
-  #       run: |
-  #         docker buildx imagetools create --tag ${{ matrix.public_registry }}/${{ matrix.image_name }}:$CI_PROJECT_VERSION \
-  #           ${{ env.SRC_REGISTRY }}/${{ matrix.image_name }}:$CI_COMMIT_SHORT_SHA

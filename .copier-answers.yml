@@ -1,6 +1,6 @@
 # Changes here will be overwritten by Copier
-_commit: a09a863
-_src_path: ssh://git@git.local.hostbutter.net/fresh2dev/copier-f2dv-project.git
+_commit: 78c3b92
+_src_path: ../../templates/copier-f2dv-project
 author_email: hello@f2dv.com
 author_name: Donald Mellenbruch
 docs_slides_url: https://www.f2dv.com/s/argparse-tui
@@ -18,3 +18,4 @@ python_version: '3.8'
 repo_name: fresh2dev/argparse-tui
 repo_owner: fresh2dev
 repo_url: https://www.github.com/fresh2dev/argparse-tui
+
