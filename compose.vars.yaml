@@ -1,0 +1,3 @@
+subdomain: "www"
+routePrefix: "/r/argparse-tui"
+svcPort: 80

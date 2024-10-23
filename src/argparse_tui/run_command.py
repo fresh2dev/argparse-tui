@@ -3,7 +3,7 @@ from __future__ import annotations
 import itertools
 import shlex
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from rich.text import Text
@@ -73,8 +73,8 @@ class UserCommandData:
     """
 
     name: CommandName
-    options: list[UserOptionData]
-    arguments: list[UserArgumentData]
+    options: list[UserOptionData] = field(default_factory=list)
+    arguments: list[UserArgumentData] = field(default_factory=list)
     subcommand: UserCommandData | None = None
     parent: UserCommandData | None = None
     command_schema: CommandSchema | None = None
@@ -100,10 +100,10 @@ class UserCommandData:
 
         return cli_args
 
-    def _to_cli_args(self, redact_secret: bool = False):
-        args = [self.name]
+    def _to_cli_args(self, redact_secret: bool = False) -> list[str]:
+        args: list[str] = [self.name]
 
-        multiples = defaultdict(list)
+        multiples: dict[str, list[tuple[str]]] = defaultdict(list)
         multiples_schemas: dict[str, OptionSchema] = {}
 
         for option in self.options:
@@ -268,7 +268,7 @@ class UserCommandData:
             redact_secret=True,
         )
 
-        text_renderables = []
+        text_renderables: list[Text] = []
         for arg in args:
             text_renderables.append(
                 Text(shlex.quote(str(arg)))

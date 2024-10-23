@@ -4,7 +4,7 @@ from rich.style import Style
 from rich.text import Text, TextType
 from textual.binding import Binding
 from textual.widgets import Tree
-from textual.widgets._tree import TreeDataType, TreeNode
+from textual.widgets._tree import TreeNode
 
 from ..schemas import CommandName, CommandSchema
 
@@ -22,7 +22,11 @@ class CommandTree(Tree[CommandSchema]):
         Binding("d", "page_down", "", priority=True, show=False),
     ]
 
-    def __init__(self, label: TextType, cli_metadata: dict[CommandName, CommandSchema]):
+    def __init__(
+        self,
+        label: TextType,
+        cli_metadata: dict[CommandName, CommandSchema],
+    ):
         super().__init__(label)
         self.show_root = False
         self.guide_depth = 2
@@ -31,7 +35,7 @@ class CommandTree(Tree[CommandSchema]):
 
     def render_label(
         self,
-        node: TreeNode[TreeDataType],
+        node: TreeNode[CommandSchema],
         base_style: Style,
         style: Style,
     ) -> Text:
@@ -42,8 +46,8 @@ class CommandTree(Tree[CommandSchema]):
     def on_mount(self):
         def build_tree(
             data: dict[CommandName, CommandSchema],
-            node: TreeNode,
-        ) -> TreeNode:
+            node: TreeNode[CommandSchema],
+        ) -> TreeNode[CommandSchema]:
             data = {key: data[key] for key in sorted(data)}
             for cmd_name, cmd_data in data.items():
                 if cmd_data.subcommands:

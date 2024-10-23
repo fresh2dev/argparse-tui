@@ -16,12 +16,12 @@ jobs:
     # needs: ['setup']
     name: Test with Python v${{ matrix.python-version }}
     if: >
-      github.ref_type == 'tag'
-      || format('refs/heads/{0}', github.event.repository.default_branch) == github.ref
+      github.ref_type != 'tag'
+      && format('refs/heads/{0}', github.event.repository.default_branch) != github.ref
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.9', '3.10', '3.11', '3.12']
       max-parallel: 3
       fail-fast: true
     steps:
@@ -33,12 +33,12 @@ jobs:
           submodules: 'recursive'
 
 
-      # - uses: fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+      # - uses: fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
       # - uses: ./
-      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
 
       - name: Set up Python v${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -59,9 +59,9 @@ jobs:
           fetch-depth: 0
           submodules: 'recursive'
 
-      # - uses: fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+      # - uses: fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
       # - uses: ./
-      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@4e3f5065f9cc1cd24dcc3184fbbf601f48075eb3
+      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
 
       - name: Test Python Project
         run: |

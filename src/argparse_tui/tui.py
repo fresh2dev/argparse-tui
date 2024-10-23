@@ -7,22 +7,28 @@ from contextlib import suppress
 from fnmatch import fnmatch
 from pathlib import Path
 from subprocess import run
+from typing import Any
 from webbrowser import open as open_url
 
 from rich.console import Console
 from rich.highlighter import ReprHighlighter
 from rich.text import Text
-from textual import events, on
+from textual import on
 from textual.app import App, AutopilotCallbackType, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.css.query import NoMatches
 from textual.screen import Screen
-from textual.widgets import Button, Footer, Label, Static, Tree
+from textual.widgets import (
+    Button,
+    Footer,
+    Label,
+    Static,
+    Tree,
+)
 from textual.widgets.tree import TreeNode
 
 from .detect_run_string import detect_run_string
-from .run_command import UserCommandData
 from .schemas import CommandName, CommandSchema
 from .widgets.command_info import CommandInfo
 from .widgets.command_tree import CommandTree
@@ -35,7 +41,7 @@ else:
     import importlib_metadata as metadata
 
 
-class CommandBuilder(Screen):
+class CommandBuilder(Screen[None]):
     COMPONENT_CLASSES = {"version-string", "prompt", "command-name-syntax"}
 
     BINDINGS = [
@@ -47,7 +53,9 @@ class CommandBuilder(Screen):
             description="Focus Command Tree",
         ),
         Binding(
-            key="ctrl+o,?", action="app.show_command_info", description="Command Info"
+            key="ctrl+o,?",
+            action="app.show_command_info",
+            description="Command Info",
         ),
         Binding(key="ctrl+s,i,/", action="app.focus('search')", description="Search"),
         Binding(key="f1", action="about", description="About"),
@@ -163,23 +171,14 @@ class CommandBuilder(Screen):
 
         self.app.push_screen(AboutDialog())
 
-    async def on_mount(self, event: events.Mount) -> None:
-        await self._refresh_command_form()
+    async def _refresh_command_form(self, node: TreeNode[CommandSchema]) -> None:
+        selected_command = node.data
+        if selected_command is None:
+            return
 
-    async def _refresh_command_form(self, node: TreeNode[CommandSchema] | None = None):
-        if node is None:
-            try:
-                command_tree = self.query_one(CommandTree)
-                node = command_tree.cursor_node
-            except NoMatches:
-                return
-
-        self.selected_command_schema = node.data
-        self._update_command_description(node)
-        self._update_execution_string_preview(
-            self.selected_command_schema,
-            self.command_data,
-        )
+        self.selected_command_schema = selected_command
+        self._update_command_description(selected_command)
+        self._update_execution_string_preview()
         await self._update_form_body(node)
 
     @on(Tree.NodeHighlighted)
@@ -194,32 +193,25 @@ class CommandBuilder(Screen):
     @on(CommandForm.Changed)
     def update_command_data(self, event: CommandForm.Changed) -> None:
         self.command_data = event.command_data
-        self._update_execution_string_preview(
-            self.selected_command_schema,
-            self.command_data,
-        )
+        self._update_execution_string_preview()
 
-    def _update_command_description(self, node: TreeNode[CommandSchema]) -> None:
-        # Update the description of the command at the bottom of the sidebar
-        # based on the currently selected node in the command tree.
+    def _update_command_description(self, command: CommandSchema) -> None:
+        """Update the description of the command at the bottom of the sidebar
+        based on the currently selected node in the command tree."""
         description_box = self.query_one("#home-command-description", Static)
-        description_text = node.data.docstring or ""
+        description_text = command.docstring or ""
         description_text = description_text.lstrip()
-        description_text = f"[b]{node.label if self.is_grouped_cli else self.app_name}[/]\n{description_text}"
+        description_text = f"[b]{command.name if self.is_grouped_cli else self.app_name}[/]\n{description_text}"
         description_box.update(description_text)
 
-    def _update_execution_string_preview(
-        self,
-        command_schema: CommandSchema,
-        command_data: UserCommandData,
-    ) -> None:
-        # Update the preview box showing the command string to be executed
+    def _update_execution_string_preview(self) -> None:
+        """Update the preview box showing the command string to be executed"""
         if self.command_data is not None:
             command_name_syntax_style = self.get_component_rich_style(
                 "command-name-syntax",
             )
             prefix = Text(f"{self.app_name} ", command_name_syntax_style)
-            new_value = command_data.to_cli_string()
+            new_value = self.command_data.to_cli_string(include_root_command=False)
             highlighted_new_value = Text.assemble(prefix, self.highlighter(new_value))
             prompt_style = self.get_component_rich_style("prompt")
             preview_string = Text.assemble(("$ ", prompt_style), highlighted_new_value)
@@ -301,14 +293,12 @@ class Tui(App):
 
         return cls(schemas, **kwargs)
 
-    def on_mount(self):
-        self.push_screen(
-            CommandBuilder(
-                self.command_schemas,
-                app_name=self.app_name,
-                app_version=self.app_version,
-                is_grouped_cli=self.is_grouped_cli,
-            ),
+    def get_default_screen(self) -> CommandBuilder:
+        return CommandBuilder(
+            self.command_schemas,
+            app_name=self.app_name,
+            app_version=self.app_version,
+            is_grouped_cli=self.is_grouped_cli,
         )
 
     @on(Button.Pressed, "#home-exec-button")
@@ -318,13 +308,20 @@ class Tui(App):
 
     def run(
         self,
-        *,
+        *args: Any,
         headless: bool = False,
         size: tuple[int, int] | None = None,
         auto_pilot: AutopilotCallbackType | None = None,
+        **kwargs: Any,
     ) -> None:
         try:
-            super().run(headless=headless, size=size, auto_pilot=auto_pilot)
+            super().run(
+                *args,
+                headless=headless,
+                size=size,
+                auto_pilot=auto_pilot,
+                **kwargs,
+            )
         finally:
             if self.post_run_command:
                 console = Console()
@@ -340,6 +337,11 @@ class Tui(App):
                     env: dict[str, str] = os.environ.copy()
                     env["PATH"] = os.pathsep.join([os.getcwd(), env["PATH"]])
                     os.execvpe(program_name, arguments, env)
+
+    @on(CommandForm.Changed)
+    def update_command_to_run(self, event: CommandForm.Changed):
+        include_root_command = not self.is_grouped_cli
+        self.post_run_command = event.command_data.to_cli_args(include_root_command)
 
     def action_focus_command_tree(self) -> None:
         try:

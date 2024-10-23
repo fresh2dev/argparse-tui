@@ -1,5 +1,5 @@
 _src_path: /var/home/d/sync/projects/py/hostbutter/src/hostbutter/resources/copier-butterstack
-environment: hostbutter-net
+environment: fresh2-dev
 flavor: sweet
 releaseName: argparse-tui-docs
 releaseNamespace: default
