@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.6 - 2024-10-23
+
+> This release cherry-picks several upstream fixes introduced in [Trogon v0.6.0](https://github.com/Textualize/trogon/releases/tag/v0.6.0)
+
+**Full Changelog**: https://github.com/fresh2dev/argparse-tui/compare/0.2.5...0.2.6
+
+### :fist: Fixes
+
+- Fixing typing issues, ensure *args and **kwargs are passed to App superclass to help compatibility. Use `get_default_screen` instead of pushing a screen on_mount.
+- Fix crashes on modern Textual, involving minor refactors
+- Do not treat Select.BLANK as a supplied value
+
+### :point_right: Changes
+
+- Minimum Python version is now 3.8.1
+- Update textualize dependency spec
+
 ## 0.2.5 - 2024-09-08
 
 **Full Changelog**: https://github.com/fresh2dev/argparse-tui/compare/0.2.4...0.2.5
