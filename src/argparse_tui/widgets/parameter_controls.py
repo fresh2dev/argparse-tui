@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import functools
+from collections.abc import Iterable
 from functools import partial
-from typing import Any, Callable, Iterable, Union, cast
+from typing import Any, Callable, Union, cast
 
 from rich.text import Text
 from textual import on
@@ -416,7 +417,7 @@ class ParameterControls(Widget):
 
         names = Text(" / ", style="dim").join([Text(n) for n in names])
         return Text.from_markup(
-            f"{names}[dim]{' multiple' if multiple else ''} <{', '.join(x.__name__ for x in types)}>[/] {' [b red]*[/]required' if is_required else ''}",
+            f"{names}[dim] <{', '.join(x.__name__ for x in types)}{', ...' if multiple else ''}>[/] {' [b red]*[/]required' if is_required else ''}",
         )
 
     def focus(self, scroll_visible: bool = True):

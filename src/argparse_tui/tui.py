@@ -35,10 +35,7 @@ from .widgets.command_tree import CommandTree
 from .widgets.form import CommandForm
 from .widgets.multiple_choice import NonFocusableVerticalScroll
 
-if sys.version_info >= (3, 8):
-    from importlib import metadata
-else:
-    import importlib_metadata as metadata
+from importlib import metadata
 
 
 class CommandBuilder(Screen[None]):

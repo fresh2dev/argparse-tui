@@ -205,17 +205,20 @@ def build_tui(
         a Textualize App
 
     Examples:
-        >>> import argparse
-        >>> from argparse_tui import build_tui
-        >>> import textual
-        ...
-        >>> parser = argparse.ArgumentParser(prog="awesome-app")
-        >>> _ = parser.add_argument("--value")
-        ...
-        >>> app = build_tui(parser)
-        ...
-        >>> isinstance(app, textual.app.App)
-        True
+    ```python
+    from argparse_tui import build_tui
+
+    import argparse
+    import textual
+
+    parser = argparse.ArgumentParser(prog="awesome-app")
+
+    parser.add_argument("--value")
+
+    app = build_tui(parser)
+
+    assert isinstance(app, textual.app.App)
+    ```
     """
 
     subcmd_args: list[str]
@@ -296,13 +299,16 @@ def invoke_tui(
         subparser_ignorelist: ...
 
     Examples:
-        >>> import argparse
-        >>> from argparse_tui import invoke_tui
-        ...
-        >>> parser = argparse.ArgumentParser(prog="awesome-app")
-        >>> _ = parser.add_argument("--value")
-        ...
-        >>> invoke_tui(parser)  # doctest: +SKIP
+    ```python
+    import argparse
+    from argparse_tui import invoke_tui
+
+    parser = argparse.ArgumentParser(prog="awesome-app")
+
+    parser.add_argument("--value")
+
+    # invoke_tui(parser)
+    ```
     """
     app: App = build_tui(
         parser=parser,
@@ -325,14 +331,14 @@ class TuiAction(argparse.Action):
         parent_parser: ...
 
     Examples:
-        >>> import argparse
-        >>> from argparse_tui import TuiAction
-        ...
-        >>> parser = argparse.ArgumentParser()
-        >>> _ = parser.add_argument('--tui', action=TuiAction)
-        ...
-        >>> parser.print_usage()
-        usage: __main__.py [-h] [--tui]
+    ```python
+    import argparse
+    from argparse_tui import TuiAction
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--tui", action=TuiAction)
+    parser.print_usage()
+    ```
     """
 
     def __init__(
@@ -405,15 +411,14 @@ def add_tui_argument(
         **kwargs: passed to `parser.add_argument(...)`
 
     Examples:
-        >>> import argparse
-        >>> from argparse_tui import add_tui_argument
-        ...
-        >>> parser = argparse.ArgumentParser()
-        ...
-        >>> add_tui_argument(parser)
-        ...
-        >>> parser.print_usage()
-        usage: __main__.py [-h] [--tui]
+    ```python
+    import argparse
+    from argparse_tui import add_tui_argument
+
+    parser = argparse.ArgumentParser()
+    add_tui_argument(parser)
+    parser.print_usage()
+    ```
     """
     if not option_strings:
         option_strings = [f"--{DEFAULT_COMMAND_NAME.replace('_', '-').lstrip('-')}"]
@@ -448,16 +453,15 @@ def add_tui_command(
         The Argparse subparsers action that was discovered or created.
 
     Examples:
-        >>> import argparse
-        >>> from argparse_tui import add_tui_argument
-        ...
-        >>> parser = argparse.ArgumentParser()
-        >>> subparsers = parser.add_subparsers()
-        ...
-        >>> _ = add_tui_command(parser)
-        ...
-        >>> parser.print_usage()
-        usage: __main__.py [-h] {tui} ...
+    ```python
+    import argparse
+    from argparse_tui import add_tui_command
+
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
+    add_tui_command(parser)
+    parser.print_usage()
+    ```
     """
 
     subparsers: argparse._SubParsersAction
