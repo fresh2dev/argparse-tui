@@ -10,7 +10,7 @@ authors = [
 description = "Present your Argparse CLI as a Textual UI (TUI)."
 readme = "README.pypi.md"
 license = {file = "LICENSE"}
-requires-python = ">=3.8.1"
+requires-python = ">=3.9.0"
 classifiers = [
     "Programming Language :: Python :: 3",
 ]
