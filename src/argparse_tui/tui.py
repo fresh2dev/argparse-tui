@@ -4,10 +4,10 @@ import os
 import shlex
 import sys
 from contextlib import suppress
-from fnmatch import fnmatch
 from pathlib import Path
 from subprocess import run
-from typing import Any
+from typing import Any, Optional
+from collections.abc import Sequence
 from webbrowser import open as open_url
 
 from rich.console import Console
@@ -35,10 +35,7 @@ from .widgets.command_tree import CommandTree
 from .widgets.form import CommandForm
 from .widgets.multiple_choice import NonFocusableVerticalScroll
 
-if sys.version_info >= (3, 8):
-    from importlib import metadata
-else:
-    import importlib_metadata as metadata
+from importlib import metadata
 
 
 class CommandBuilder(Screen[None]):
@@ -242,7 +239,7 @@ class Tui(App):
         command_schemas: dict[CommandName, CommandSchema],
         app_name: str | None,
         app_version: str | None = None,
-        command_filter: str | None = None,
+        subcommand_filter: Sequence[str] | None = None,
     ) -> None:
         super().__init__()
 
@@ -251,20 +248,17 @@ class Tui(App):
 
         root_cmd_name: str = next(iter(command_schemas.keys()))
 
-        if command_filter and command_schemas[root_cmd_name].subcommands:
-            matching_schemas: dict[CommandName, CommandSchema] = {
-                k: v
-                for k, v in command_schemas[root_cmd_name].subcommands.items()
-                if fnmatch(k, command_filter)
-            }
-            if len(matching_schemas) == 1 and not any(
-                (x in command_filter) for x in ("*", "?")
-            ):
-                command_schemas = matching_schemas
-                root_cmd_name = next(iter(command_schemas.keys()))
-                #  app_name = app_name + " " + root_cmd_name
-            elif matching_schemas:
-                command_schemas[root_cmd_name].subcommands = matching_schemas
+        for subcmd in subcommand_filter or []:
+            matching_schema: CommandSchema | None = command_schemas[
+                root_cmd_name
+            ].subcommands.get(subcmd)
+
+            if not matching_schema:
+                break
+
+            root_cmd_name = CommandName(subcmd)
+
+            command_schemas = {root_cmd_name: matching_schema}
 
         self.command_schemas = command_schemas
         self.is_grouped_cli = any(v.subcommands for v in command_schemas.values())

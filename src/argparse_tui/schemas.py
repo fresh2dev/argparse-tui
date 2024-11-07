@@ -3,7 +3,8 @@ from __future__ import annotations
 import uuid
 from dataclasses import dataclass, field
 from functools import partial
-from typing import Any, Iterable, NewType, Sequence, Type
+from typing import Any, NewType, Type
+from collections.abc import Iterable, Sequence
 
 
 def generate_unique_id():
@@ -75,12 +76,12 @@ class ArgumentSchema:
             # iterate over the args/kwargs looking for a type.
             # if not found, default to `str`.
             for x in self.type.args:
-                if isinstance(x, Type):
+                if isinstance(x, type):
                     self.type = [x]
                     break
             else:
                 for v in self.type.keywords.values():
-                    if isinstance(v, Type):
+                    if isinstance(v, type):
                         self.type = [v]
                         break
                 else:

@@ -1,4 +1,4 @@
-FROM python:3.10.10-slim-bullseye as build
+FROM python:3.13.0-slim-bullseye as build
 RUN apt-get update \
     && apt-get install --upgrade -y git build-essential gcc libssl-dev libffi-dev python3-dev
 WORKDIR /workspace
@@ -9,6 +9,7 @@ RUN python3 -m pip install 'mkdocs==1.*' \
     'mkdocs-jupyter' \
     'mkdocs-include-dir-to-nav' \
     'mkdocstrings[python]' \
+    'black' \
     'mkdocs-autorefs' \
     'pymdown-extensions' \
     'pygments'
