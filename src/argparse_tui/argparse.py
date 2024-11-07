@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import argparse
 import sys
+from collections.abc import Sequence
 from contextlib import suppress
 from copy import deepcopy
-from typing import Any, Sequence
+from typing import Any
 
 from textual.app import App
 
@@ -51,12 +52,12 @@ def introspect_argparse_parser(
                         not subparser_ignorelist
                         or subparser not in subparser_ignorelist
                     ):
-                        cmd_data.subcommands[
-                            CommandName(subparser_name)
-                        ] = process_command(
-                            CommandName(subparser_name),
-                            subparser,
-                            parent=cmd_data,
+                        cmd_data.subcommands[CommandName(subparser_name)] = (
+                            process_command(
+                                CommandName(subparser_name),
+                                subparser,
+                                parent=cmd_data,
+                            )
                         )
                 continue
 
@@ -217,36 +218,61 @@ def build_tui(
         True
     """
 
-    cmd_filter: str | None = None
-    parsed_args: dict[str, str] = {}
+    subcmd_args: list[str]
+    parsed_args: dict[str, str]
 
     if cli_args:
-        for x in cli_args:
-            if not x.startswith("-"):
-                cmd_filter = x
-                break
-
         # Make all args optional
-        def _set_actions_optional(parser):
+        def _set_actions_optional(
+            parser,
+            cli_args: list[str] | None = None,
+            subcmd_args: list[str] | None = None,
+        ) -> list[str]:
             # Update arguments
-
             for action in parser._actions:
                 action.required = False
 
             # Update subparsers
-            if parser._subparsers:
-                for sp_action in parser._subparsers._actions:
-                    sp_action.required = False
-                    if isinstance(sp_action, argparse._SubParsersAction):
-                        for subparser in sp_action.choices.values():
+            sp_actions = parser._subparsers._actions if parser._subparsers else []
+            for sp_action in sp_actions:
+                sp_action.required = False
+                if isinstance(sp_action, argparse._SubParsersAction):
+                    found_subcmd: bool = False
+                    for subcmd, subparser in sp_action.choices.items():
+                        if found_subcmd:
                             _set_actions_optional(subparser)
+                            continue
+
+                        try:
+                            if not cli_args:
+                                raise ValueError
+                            subcmd_index: int = cli_args.index(subcmd)
+                        except ValueError:
+                            _set_actions_optional(subparser)
+                        else:
+                            found_subcmd = True
+                            subcmd_args.append(subcmd)
+                            _set_actions_optional(
+                                subparser,
+                                cli_args=cli_args[(subcmd_index + 1) :],
+                                subcmd_args=subcmd_args,
+                            )
+
+            return subcmd_args
 
         parser_copy: argparse.ArgumentParser = deepcopy(parser)
-        _set_actions_optional(parser_copy)
+        subcmd_args = _set_actions_optional(
+            parser_copy,
+            cli_args=cli_args,
+            subcmd_args=[],
+        )
 
         with suppress(SystemExit):
             namespace, _unknown_args = parser_copy.parse_known_args(cli_args)
             parsed_args = vars(namespace)
+    else:
+        subcmd_args = []
+        parsed_args = {}
 
     schemas = introspect_argparse_parser(
         parser,
@@ -254,7 +280,7 @@ def build_tui(
         value_overrides=parsed_args,
     )
 
-    return Tui(schemas, app_name=parser.prog, command_filter=cmd_filter)
+    return Tui(schemas, app_name=parser.prog, subcommand_filter=subcmd_args)
 
 
 def invoke_tui(
