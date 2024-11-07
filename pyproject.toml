@@ -7,7 +7,7 @@ name = "argparse-tui"
 authors = [
     {name = "Donald Mellenbruch", email = "hello@f2dv.com"},
 ]
-description = "Your Argparse CLI, now with a TUI."
+description = "Present your Argparse CLI as a Textual UI (TUI)."
 readme = "README.pypi.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.8.1"
@@ -21,8 +21,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+
+[dependency-groups]
 dev = [
-    "pdbpp",
+    "pdbp",
     # python -m ipykernel install --user --name argparse-tui
     "ipykernel",
     "ipywidgets",
@@ -30,45 +32,52 @@ dev = [
 ]
 tests = [
     "pytest==8.*",
+    "pytest-env==1.*",
     "pytest-cov==5.*",
+    "pytest-asyncio==0.24.*",
     "pytest-html==4.*",
     "pytest-sugar==1.*",
+    "pytest-markdown-docs==0.6.*",
     "pytest-custom-exit-code==0.3.*",
     "packaging==23.*",
     "mockish>=0.1.1,<2",
 ]
+
+[tool.uv]
+default-groups = ["dev", "tests"]
+
+[tool.uv.sources]
+mockish = { path = "../mockish", editable = true }
 
 [project.urls]
 Homepage = "https://www.f2dv.com/r/argparse-tui"
 Repository = "https://www.github.com/fresh2dev/argparse-tui"
 # Funding = "https://www.f2dv.com/fund"
 
-[project.scripts]
-argparse-tui = "argparse_tui.__main__:main"
-
 [tool.pytest.ini_options]
 minversion = 8.0
 testpaths = ["tests"]
+env = [
+    "PYTHONBREAKPOINT=pdbp.set_trace",
+]
 
 [tool.pyright]
 include = ["src", "tests"]
 typeCheckingMode = "standard"
+reportUnusedImport = "none"
+reportPrivateUsage = "none"
+reportImplicitOverride = "none"
+reportAttributeAccessIssue = "none"
 reportImportCycles = "error"
-reportPrivateUsage = "warning"
 reportUnnecessaryIsInstance = "warning"
 reportUnnecessaryCast = "warning"
 reportUnnecessaryComparison = "warning"
 reportUnnecessaryContains = "warning"
 reportUnnecessaryTypeIgnoreComment = "warning"
-reportImplicitOverride = "warning"
 reportShadowedImports = "warning"
 
 [tool.ruff]
-include = ["src/**/*.py", "tests/**/*.py"]
-respect-gitignore = true
-# Enable preview features.
 preview = true
-# Enable unsafe fixes.
 unsafe-fixes = true
 
 [tool.ruff.format]
@@ -118,11 +127,11 @@ select = [
 ignore = [
     "E501",    # line too long, handled by black
     "PLR0912", # too many branches
-    "PLR0913", # too many arguments (n > 5)
+    "PLR0913", # too many arguments
     "PLR0915", # too many statements
+    "PLR0917", # too many positional arguments
     "PLR2004", # magic value used in comparison
 ]
-
 fixable = [
     "E",       # pycodestyle errors
     "W",       # pycodestyle warnings
@@ -132,9 +141,6 @@ fixable = [
 ]
 unfixable = []
 
-# Ignore unused variables prefixed with an underscore.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
 [tool.tox]
 legacy_tox_ini = """
 [tox]
@@ -142,8 +148,8 @@ minversion = 4.0
 [testenv]
 passenv = *
 recreate = true
-deps = pytest
-extras = tests
+dependency_groups = tests
 commands =
-    python -m pytest {posargs}
+    python -m pytest {posargs} --cov=./src --cov-report=term
+    python -m pytest {posargs} --markdown-docs -m markdown-docs --suppress-no-test-exit-code ./src
 """

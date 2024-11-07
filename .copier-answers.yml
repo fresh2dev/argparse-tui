@@ -1,5 +1,5 @@
 # Changes here will be overwritten by Copier
-_commit: 78c3b92
+_commit: 8af3bf2
 _src_path: ../../templates/copier-f2dv-project
 author_email: hello@f2dv.com
 author_name: Donald Mellenbruch
@@ -12,9 +12,9 @@ is_minimal: false
 is_python: true
 license_type: MIT
 package_name: argparse_tui
-project_description: Your Argparse CLI, now with a TUI.
+project_description: Present your Argparse CLI as a Textual UI (TUI).
 project_name: argparse-tui
-python_version: '3.8'
+python_version: '3.9'
 repo_name: fresh2dev/argparse-tui
 repo_owner: fresh2dev
 repo_url: https://www.github.com/fresh2dev/argparse-tui

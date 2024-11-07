@@ -18,9 +18,6 @@ extra:
 ## https://www.mkdocs.org/user-guide/writing-your-docs/#configure-pages-and-navigation
 nav:
   - Home: index.md
-  - Articles:
-      - Examples: 'page/examples.ipynb'
-      - 'page/related.md'
   - Reference: reference/
   - Changelog: changelog.md
   - License: license.md
@@ -29,6 +26,9 @@ nav:
       # - '/fund': 'https://www.f2dv.com/fund/'
 
 watch:
+  - ./README.md
+  - ./CHANGELOG.md
+  - ./LICENSE
   - ./src
 
 theme:
@@ -115,7 +115,7 @@ plugins:
             show_root_toc_entry: false
             show_signature: true
             show_signature_annotations: true
-            show_source: false
+            show_source: true
             show_submodules: false
             signature_corssrefs: true
             unwrap_annotated: true

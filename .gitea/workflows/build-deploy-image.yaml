@@ -67,10 +67,10 @@ jobs:
       # matrix: ${{ fromJson(needs.find-dockerfiles.outputs.matrix) }}
       matrix:
         include:
-          # - dockerfile: Dockerfile
-          #   image_suffix: ""
-          - dockerfile: Dockerfile-docs
-            image_suffix: "-docs"
+          - dockerfile: Dockerfile
+            image_suffix: ""
+          # - dockerfile: Dockerfile-docs
+          #   image_suffix: "-docs"
       fail-fast: true
     steps:
       ### Checkout

@@ -10,7 +10,7 @@ global:
           labels:
             kompose.controller.type: "deployment"  # 'deployment' (default) or 'statefulset'
             # kompose.serviceaccount-name: "<{{$vars.releaseName}}>"
-          image: '<{{ $vars.registry }}>/<{{ getenv "CI_PROJECT_PATH" | required "Missing required env var: CI_PROJECT_PATH" }}>-docs:<{{ getenv "CI_COMMIT_SHORT_SHA" | required "Missing required env var: CI_COMMIT_SHORT_SHA" }}>'
+          image: '<{{ $vars.registry }}>/<{{ getenv "CI_PROJECT_PATH" | required "Missing required env var: CI_PROJECT_PATH" }}>:<{{ getenv "CI_COMMIT_SHORT_SHA" | required "Missing required env var: CI_COMMIT_SHORT_SHA" }}>'
           ports: ["<{{ $vars.svcPort }}>"]
           configs:
             - source: <{{$vars.releaseName}}>-nginx-config
