@@ -60,7 +60,7 @@ subcmd_1: CommandSchema = CommandSchema(
 tui: Tui = Tui.from_schemas(root_schema, subcmd_1, app_name=None)
 
 if __name__ == "__main__":
-    if DEFAULT_COMMAND_NAME in sys.argv:
+    if DEFAULT_COMMAND_NAME in sys.argv[1:]:
         tui.run()
     else:
         print(sys.argv)

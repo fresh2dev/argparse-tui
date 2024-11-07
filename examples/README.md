@@ -7,17 +7,49 @@ git clone https://github.com/fresh2dev/argparse-tui.git
 
 cd argparse-tui/examples
 
-pip install -r requirements.txt
+pip install requirements.txt
 ```
 
+Demos:
+
+<!-- TOC GFM -->
+
+- [Argparse](#argparse)
+- [Argparse (Invoke)](#argparse-invoke)
+- [Yapx](#yapx)
+- [Myke](#myke)
+- [Plain o' `sys.argv`](#plain-o-sysargv)
+
+<!-- /TOC -->
+
+## Argparse
+
 ```sh
-./demo_argv.py tui
+./demo_argparse.py --tui
+# OR, as a command:
+./demo_argparse.py tui
 ```
+
+## Argparse (Invoke)
+
+```sh
+./demo_argparse_invoke.py
+```
+
+## Yapx
 
 ```sh
 ./demo_yapx.py --tui
 ```
 
+## Myke
+
 ```sh
 myke --tui --myke-file ./demo_myke.py
+```
+
+## Plain o' `sys.argv`
+
+```sh
+./demo_argv.py tui
 ```
