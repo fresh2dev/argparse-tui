@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.1 - 2024-11-26
+
+**Full Changelog**: https://github.com/fresh2dev/argparse-tui/compare/0.3.0...0.3.1
+
+### :fist: Fixes
+
+- Weird characters shown on launch
+- Better detection of `<secret>` flag in argument help
+
 ## 0.3.0 - 2024-11-07
 
 **Full Changelog**: https://github.com/fresh2dev/argparse-tui/compare/0.2.6...0.3.0
