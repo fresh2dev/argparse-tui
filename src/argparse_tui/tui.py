@@ -227,8 +227,10 @@ class CommandBuilder(Screen[None]):
             command_schemas=self.command_schemas,
         )
         await parent.mount(command_form)
-        if not self.is_grouped_cli:
-            command_form.focus()
+        # TODO: whatever control is focused has this text added: [2026;2$y
+        # disable focus-on-launch until this issue is resolved.
+        # if not self.is_grouped_cli:
+        #     command_form.focus()
 
 
 class Tui(App):

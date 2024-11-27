@@ -123,18 +123,7 @@ def introspect_argparse_parser(
             param_help: str | None = param.help
             if param_help:
                 param_help = param_help.replace("%(default)s", str(param.default))
-
-                tag_prefix: str = "<"
-                tag_suffix: str = ">"
-                tag_start: int = param_help.find(tag_prefix)
-                if tag_start >= 0:
-                    tag_end: int = param_help.find(tag_suffix)
-                    if tag_end > tag_start:
-                        tag_txt: str = param_help[tag_start : tag_end + 1]
-                        tags: list[str] = [x.strip() for x in tag_txt[1:-1].split(",")]
-                        is_secret = "secret" in tags
-                        if any([is_secret]):
-                            param_help = param_help.replace(tag_txt, "")
+                is_secret = "<secret>" in param_help
 
             is_required: bool = (
                 param.required
