@@ -1,9 +1,8 @@
 # Changes here will be overwritten by Copier
-_commit: 8af3bf2
-_src_path: ../../templates/copier-f2dv-project
+_commit: 0537098
+_src_path: ssh://git@git.local.hostbutter.net/fresh2dev/copier-f2dv-project.git
 author_email: hello@f2dv.com
 author_name: Donald Mellenbruch
-docs_slides_url: https://www.f2dv.com/s/argparse-tui
 docs_url: https://www.f2dv.com/r/argparse-tui
 funding_url: https://www.f2dv.com/fund
 home_domain: f2dv.com

@@ -1,4 +1,4 @@
-FROM python:3.13.0-slim-bullseye as build
+FROM python:3.13-slim-bullseye as build
 RUN apt-get update \
     && apt-get install --upgrade -y git build-essential gcc libssl-dev libffi-dev python3-dev
 WORKDIR /workspace

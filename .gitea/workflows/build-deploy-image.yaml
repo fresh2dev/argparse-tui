@@ -23,7 +23,7 @@ jobs:
 
       # - uses: fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
       # - uses: ./
-      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
+      - uses: https://forgejo.local.hostbutter.net/fresh2dev/hostbutter@39d7f8982aa36a400d7457b1dfdfece351788b10
         with:
           github-token: ${{ secrets.EGET_GITHUB_TOKEN }}
 
@@ -83,7 +83,9 @@ jobs:
       ### Checkout
       # - uses: fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
       # - uses: ./
-      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
+      - uses: https://forgejo.local.hostbutter.net/fresh2dev/hostbutter@39d7f8982aa36a400d7457b1dfdfece351788b10
+        with:
+          github-token: ${{ secrets.EGET_GITHUB_TOKEN }}
 
       - name: Dump github context
         run:   echo "$GITHUB_CONTEXT"
@@ -144,7 +146,9 @@ jobs:
       ### Checkout
       # - uses: fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
       # - uses: ./
-      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
+      - uses: https://forgejo.local.hostbutter.net/fresh2dev/hostbutter@39d7f8982aa36a400d7457b1dfdfece351788b10
+        with:
+          github-token: ${{ secrets.EGET_GITHUB_TOKEN }}
 
       - if: >
           endsWith(github.repository, '/hostbutter')

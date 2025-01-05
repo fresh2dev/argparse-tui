@@ -21,7 +21,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
       max-parallel: 3
       fail-fast: true
     steps:
@@ -35,7 +35,9 @@ jobs:
 
       # - uses: fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
       # - uses: ./
-      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
+      - uses: https://forgejo.local.hostbutter.net/fresh2dev/hostbutter@39d7f8982aa36a400d7457b1dfdfece351788b10
+        with:
+          github-token: ${{ secrets.EGET_GITHUB_TOKEN }}
 
       - name: Set up Python v${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -44,7 +46,7 @@ jobs:
 
       - name: Test Python Project using Python v${{ matrix.python-version }}
         run: |
-          tox --workdir ${{ runner.temp }}/tox -e py
+          tox --workdir ${{ runner.temp }}/tox -e py${{ matrix.python-version }}
 
   build-publish-python:
     # needs: ['setup']
@@ -61,7 +63,9 @@ jobs:
 
       # - uses: fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
       # - uses: ./
-      - uses: https://gitea.local.hostbutter.net/fresh2dev/hostbutter@01f6cc2ffa2f916e237c458d1641314aed3d15bb
+      - uses: https://forgejo.local.hostbutter.net/fresh2dev/hostbutter@39d7f8982aa36a400d7457b1dfdfece351788b10
+        with:
+          github-token: ${{ secrets.EGET_GITHUB_TOKEN }}
 
       - name: Test Python Project
         run: |

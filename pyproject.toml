@@ -21,6 +21,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# extras = []
 
 [dependency-groups]
 dev = [
@@ -98,10 +99,10 @@ select = [
     "E",       # pycodestyle errors
     "EM",      # flake8-errmsg
     "F",       # pyflakes
-    "FIX",     # pyflakes
+    "FAST",    # FastAPI
     "FLY",     # pyflakes
     "G",       # flake8-logging-format
-    "I",       # flake8-logging-format
+    "I",       # isort
     "ISC",     # flake8-implicit-str-concat
     "PERF",    # flake8-pie
     "PIE",     # flake8-pie
@@ -119,27 +120,19 @@ select = [
     "TRY",     # tryceratops
     "UP",      # pyupgrade
     "W",       # pycodestyle warnings
-    # "ANN",   # flake8-annotations
-    # "D",     # pydocstyle
-    # "ERA",   # eradicate
-    # "I",     # isort (missing-required-import)
 ]
 ignore = [
     "E501",    # line too long, handled by black
+    "PLR0904", # too many class methods
     "PLR0912", # too many branches
     "PLR0913", # too many arguments
     "PLR0915", # too many statements
     "PLR0917", # too many positional arguments
+    "PLR1702", # too many nested blocks
     "PLR2004", # magic value used in comparison
 ]
-fixable = [
-    "E",       # pycodestyle errors
-    "W",       # pycodestyle warnings
-    "COM",     # commas
-    "F401",    # unused-imports
-    "I001",    # unsorted-imports
-]
-unfixable = []
+# fixable = []
+# unfixable = []
 
 [tool.tox]
 legacy_tox_ini = """
@@ -148,6 +141,7 @@ minversion = 4.0
 [testenv]
 passenv = *
 recreate = true
+# extras = extras
 dependency_groups = tests
 commands =
     python -m pytest {posargs} --cov=./src --cov-report=term
