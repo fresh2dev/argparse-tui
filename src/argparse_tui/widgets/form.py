@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+from collections import defaultdict
 
 from textual import on
 from textual.app import ComposeResult
@@ -117,18 +118,41 @@ class CommandForm(Widget):
                         )
                         if is_inherited:
                             v.border_title += " [dim not bold](inherited)"
-                        if arguments:
-                            yield Label("Arguments", classes="command-form-heading")
-                            for argument in arguments:
-                                controls = ParameterControls(argument, id=argument.key)
-                                if self.first_control is None:
-                                    self.first_control = controls
-                                yield controls
 
-                        if options:
-                            yield Label("Options", classes="command-form-heading")
-                            for option in options:
-                                controls = ParameterControls(option, id=option.key)
+                        param_groups_with_weight: dict[
+                            str,
+                            tuple[int, list[ArgumentSchema]],
+                        ] = defaultdict(lambda: (0, []))
+
+                        for params_of_type in [arguments, options]:
+                            if params_of_type:
+                                for param in params_of_type:
+                                    group_weight, group_params = (
+                                        param_groups_with_weight[param.group_title]
+                                    )
+                                    group_params.append(param)
+                                    param_groups_with_weight[param.group_title] = (
+                                        max(group_weight, param.group_weight),
+                                        group_params,
+                                    )
+
+                        # Sort `param_groups` by `group_weight`,
+                        # and sort within `param_groups` by `weight`.
+                        param_groups: dict[str, list[ArgumentSchema]] = {
+                            k: sorted(v[1], key=lambda x: x.weight)
+                            for k, v in sorted(
+                                param_groups_with_weight.items(),
+                                key=lambda kv: kv[1][0],
+                            )
+                        }
+
+                        for group_title, group_params in param_groups.items():
+                            yield Label(group_title, classes="command-form-heading")
+                            for param in group_params:
+                                controls = ParameterControls(
+                                    param,
+                                    id=param.key,
+                                )
                                 if self.first_control is None:
                                     self.first_control = controls
                                 yield controls

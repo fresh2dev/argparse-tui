@@ -36,10 +36,18 @@ def introspect_argparse_parser(
             parent=parent,
         )
 
-        # this is specific to yapx.
+        # This is specific to yapx.
         param_types: dict[str, type[Any]] | None = getattr(parser, "_dest_type", None)
 
-        for param in parser._actions:
+        param_groups: list[tuple[int, str, argparse.Action]] = [
+            (i, (x.title or "Untitled").title(), action)
+            for i, x in enumerate(parser._action_groups)
+            for action in x._group_actions
+        ]
+
+        for i, param_group in enumerate(param_groups):
+            param_group_weight, param_group_title, param = param_group
+
             if (
                 isinstance(param, (TuiAction, argparse._HelpAction))
                 or param.help is argparse.SUPPRESS
@@ -145,7 +153,10 @@ def introspect_argparse_parser(
             is_secret: bool = False
             param_help: str | None = param.help
             if param_help:
-                param_help = param_help.replace("%(default)s", str(param_default_value))
+                param_help = param_help.replace(
+                    "%(default)s",
+                    str(param_default_value),
+                )
                 is_secret = "<secret>" in param_help
 
             is_required: bool = (
@@ -178,6 +189,9 @@ def introspect_argparse_parser(
                     multi_value=multi_value,
                     nargs=nargs,
                     secret=is_secret,
+                    weight=i,
+                    group_title=param_group_title,
+                    group_weight=param_group_weight,
                 )
                 cmd_data.options.append(option_data)
 
@@ -194,6 +208,9 @@ def introspect_argparse_parser(
                     multi_value=multi_value,
                     nargs=nargs,
                     secret=is_secret,
+                    weight=i,
+                    group_title=param_group_title,
+                    group_weight=param_group_weight,
                 )
                 cmd_data.arguments.append(argument_data)
 
