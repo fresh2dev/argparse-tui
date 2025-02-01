@@ -40,10 +40,10 @@ def introspect_argparse_parser(
         param_types: dict[str, type[Any]] | None = getattr(parser, "_dest_type", None)
 
         for param in parser._actions:
-            if isinstance(param, TuiAction) or argparse.SUPPRESS in [
-                param.help,
-                param.default,
-            ]:
+            if (
+                isinstance(param, (TuiAction, argparse._HelpAction))
+                or param.help is argparse.SUPPRESS
+            ):
                 continue
 
             if isinstance(param, argparse._SubParsersAction):
@@ -65,28 +65,34 @@ def introspect_argparse_parser(
             if param_types:
                 param_type = param_types.get(param.dest, param.type)
 
-            if param_type is None and param.default is not None:
-                param_type = type(param.default)
+            param_default_value: Any = param.default
+            if param_default_value is argparse.SUPPRESS:
+                param_default_value = None
 
+            if param_type is None and param_default_value is not None:
+                param_type = type(param_default_value)
+
+            is_passthru: bool = False
             is_counting: bool = False
             is_multiple: bool = False
             is_flag: bool = False
 
-            opts: list[str] = param.option_strings
+            opts: list[str] = list(param.option_strings)
             secondary_opts: list[str] = []
 
             if isinstance(param, argparse._CountAction):
                 is_counting = True
-            elif isinstance(param, argparse._StoreConstAction):
+            elif isinstance(
+                param,
+                (argparse._StoreConstAction, argparse._VersionAction),
+            ):
                 is_flag = True
-            elif (
-                sys.version_info >= (3, 9)
-                and isinstance(param, argparse.BooleanOptionalAction)
-            ) or type(param).__name__ == "BooleanOptionalAction":
-                # check the type by name, because 'BooleanOptionalAction'
-                # is often manually backported to Python versions < 3.9.
-                if param_type is None:
-                    param_type = bool
+            elif type(param).__name__ == "DummyArgAction":
+                # Dummy args are specific to `yapx`
+                is_passthru = True
+            elif (isinstance(param, argparse.BooleanOptionalAction)) or type(
+                param,
+            ).__name__ == "BooleanOptionalAction":
                 is_flag = True
 
                 if hasattr(param, "_negation_option_strings"):
@@ -102,34 +108,58 @@ def introspect_argparse_parser(
                     ]
                     secondary_opts = [x for x in param.option_strings if x not in opts]
 
+            if is_flag and param_type is None:
+                param_type = bool
+
             nargs: int = (
                 0
-                if param.nargs is None and is_flag
+                if param.nargs in {None, argparse.SUPPRESS} and is_flag
                 else 1
                 if param.nargs is None or param.nargs == "?"
                 else -1
-                if param.nargs in ["+", "*", argparse.REMAINDER]
+                if (
+                    is_passthru
+                    or param.nargs
+                    in {
+                        "+",
+                        "*",
+                        argparse.REMAINDER,
+                        argparse.ONE_OR_MORE,
+                        argparse.ZERO_OR_MORE,
+                    }
+                )
                 else int(param.nargs)
             )
-            multi_value: bool = nargs < 0 or nargs > 1
+            # Does this single parameter accept multiple values?
+            # e.g., `--foo bar baz buz`
+            multi_value: bool = is_passthru or nargs < 0 or nargs > 1
 
+            # Can this parameter be specific multiple times?
+            # e.g., `--foo bar --foo baz --foo buz`
             if isinstance(param, argparse._AppendAction) and nargs <= 1:
                 # TODO: support 'append' action params with nargs > 1.
                 is_multiple = True
 
-            # look for these "tags" in the help text: "secret"
+            # Look for these "tags" in the help text: "secret"
             # if present, set variables and remove from the help text.
             is_secret: bool = False
             param_help: str | None = param.help
             if param_help:
-                param_help = param_help.replace("%(default)s", str(param.default))
+                param_help = param_help.replace("%(default)s", str(param_default_value))
                 is_secret = "<secret>" in param_help
 
             is_required: bool = (
                 param.required
-                and param.default is None
-                and param.nargs not in ["?", "*", argparse.REMAINDER]
+                and param_default_value is None
+                and param.nargs
+                not in {"?", "*", argparse.REMAINDER, argparse.ZERO_OR_MORE}
                 and nargs != 0
+            )
+
+            param_value = (
+                value_overrides.pop("__unknown_args__", None)
+                if is_passthru
+                else value_overrides.pop(param.dest, None)
             )
 
             if param.option_strings:
@@ -140,8 +170,8 @@ def introspect_argparse_parser(
                     counting=is_counting,
                     secondary_opts=secondary_opts,
                     required=is_required,
-                    default=param.default,
-                    value=value_overrides.get(param.dest),
+                    default=param_default_value,
+                    value=param_value,
                     help=param_help,
                     choices=param.choices,
                     multiple=is_multiple,
@@ -156,8 +186,8 @@ def introspect_argparse_parser(
                     name=param.dest,
                     type=param_type,
                     required=is_required,
-                    default=param.default,
-                    value=value_overrides.get(param.dest),
+                    default=param_default_value,
+                    value=param_value,
                     help=param_help,
                     choices=param.choices,
                     multiple=is_multiple,
@@ -210,8 +240,8 @@ def build_tui(
     ```
     """
 
-    subcmd_args: list[str]
-    parsed_args: dict[str, str]
+    subcmd_args: list[str] = []
+    parsed_args: dict[str, str] = {}
 
     if cli_args:
         # Make all args optional
@@ -260,11 +290,9 @@ def build_tui(
         )
 
         with suppress(SystemExit):
-            namespace, _unknown_args = parser_copy.parse_known_args(cli_args)
-            parsed_args = vars(namespace)
-    else:
-        subcmd_args = []
-        parsed_args = {}
+            namespace, unknown_args = parser_copy.parse_known_args(cli_args)
+            parsed_args: dict[str, str | list[str]] = vars(namespace)
+            parsed_args["__unknown_args__"] = unknown_args
 
     schemas = introspect_argparse_parser(
         parser,

@@ -6,7 +6,7 @@ import sys
 from contextlib import suppress
 from pathlib import Path
 from subprocess import run
-from typing import Any, Optional
+from typing import Any
 from collections.abc import Sequence
 from webbrowser import open as open_url
 
