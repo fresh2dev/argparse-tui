@@ -116,6 +116,8 @@ class ParameterControls(Widget):
         is_option = isinstance(schema, OptionSchema)
         nargs = schema.nargs
 
+        assert isinstance(argument_type, list)
+
         label = self._make_command_form_control_label(
             name,
             argument_type,
@@ -130,7 +132,7 @@ class ParameterControls(Widget):
         # If there are N defaults, we render the "group" N times.
         # Each group will contain `nargs` widgets.
         with ControlGroupsContainer():
-            if argument_type is not bool:
+            if not any(x is bool for x in argument_type):
                 yield Label(label, classes="command-form-label")
 
             if schema.choices and multiple:
