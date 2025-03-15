@@ -232,13 +232,17 @@ def build_tui(
 ) -> App:
     """Build a Textual UI (TUI) given an argparse parser.
 
+    Creates a Textual App that presents a form-based interface for the given
+    argparse parser. The TUI allows users to interactively set argument values
+    through a user-friendly interface instead of command line flags.
+
     Args:
-        parser: ...
-        cli_args: Arguments parsed for pre-populating the TUI form.
-        subparser_ignorelist: ...
+        parser: The argparse parser to build a TUI for
+        cli_args: Arguments parsed for pre-populating the TUI form fields
+        subparser_ignorelist: List of subparsers to exclude from the TUI
 
     Returns:
-        a Textualize App
+        A Textual App instance
 
     Examples:
     ```python
@@ -327,10 +331,13 @@ def invoke_tui(
 ) -> None:
     """Invoke a Textual UI (TUI) given an argparse parser.
 
+    Builds and runs a TUI for the given argparse parser. This is a convenience
+    function that combines build_tui() and app.run() in one call.
+
     Args:
-        parser: ...
-        cli_args: Arguments parsed for pre-populating the TUI form.
-        subparser_ignorelist: ...
+        parser: The argparse parser to create a TUI for
+        cli_args: Arguments parsed for pre-populating the TUI form fields
+        subparser_ignorelist: List of subparsers to exclude from the TUI
 
     Examples:
     ```python
@@ -355,14 +362,18 @@ def invoke_tui(
 class TuiAction(argparse.Action):
     """argparse `Action` that will analyze the parser and display a TUI.
 
+    When this action is triggered during argument parsing, it will
+    launch a Textual UI for the parser. This allows adding a '--tui'
+    flag to any argparse-based CLI to provide an interactive interface.
+
     Args:
-        option_strings: ...
-        dest: ...
-        default: ...
-        help: ...
-        const: ...
-        metavar: ...
-        parent_parser: ...
+        option_strings: The command-line flags that trigger this action
+        dest: The attribute name to store the result in
+        default: The default value if the argument is not present
+        help: The help text for this argument
+        const: The constant value for this action
+        metavar: The name to use in usage messages
+        parent_parser: The parent parser if this is in a subparser
 
     Examples:
     ```python
@@ -434,15 +445,18 @@ def add_tui_argument(
     default=argparse.SUPPRESS,
     **kwargs,
 ) -> None:
-    """
+    """Add a TUI argument to an existing argparse parser.
+
+    This function adds a flag (like --tui) to the parser that, when specified,
+    will launch a Textual UI for configuring the command arguments.
 
     Args:
-        parser: the argparse parser to add the argument to.
-        parent_parser: the parent of the given parser.
-        option_strings: list of CLI flags that will invoke the TUI
-        help: ...
-        default: ...
-        **kwargs: passed to `parser.add_argument(...)`
+        parser: The argparse parser to add the argument to
+        parent_parser: The parent of the given parser, if this is a subparser
+        option_strings: List of CLI flags that will invoke the TUI (default: --tui)
+        help: Help text for the TUI argument
+        default: Default value for the argument
+        **kwargs: Additional keyword arguments passed to `parser.add_argument(...)`
 
     Examples:
     ```python
@@ -475,16 +489,20 @@ def add_tui_command(
     help: str = "Open Textual UI.",  # pylint: disable=redefined-builtin # noqa: A002
     **kwargs: Any,
 ) -> argparse._SubParsersAction:
-    """
+    """Add a TUI subcommand to an existing argparse parser.
+
+    This function adds a subcommand (like 'tui') to the parser that, when invoked,
+    will launch a Textual UI for configuring the command arguments. This is useful
+    for CLI applications that want to offer both command-line and TUI interfaces.
 
     Args:
-        parser: the argparse parser
-        command: name of the CLI command that will invoke the TUI (default=`tui`)
-        help: help message for the argument
-        **kwargs: if subparsers do not already exist, create with these kwargs.
+        parser: The argparse parser to add the subcommand to
+        command: Name of the CLI command that will invoke the TUI (default=`tui`)
+        help: Help message for the subcommand
+        **kwargs: If subparsers do not already exist, create with these kwargs
 
     Returns:
-        The Argparse subparsers action that was discovered or created.
+        The Argparse subparsers action that was discovered or created
 
     Examples:
     ```python
