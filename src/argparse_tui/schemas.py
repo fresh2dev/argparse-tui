@@ -4,7 +4,9 @@ import uuid
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from functools import partial
-from typing import Any, NewType, Type
+from typing import Any, NewType
+
+from textual.content import Content
 
 
 def generate_unique_id():
@@ -46,7 +48,7 @@ class ArgumentSchema:
     name: str | list[str]
     type: type[Any] | Sequence[type[Any]] | None = None
     required: bool = False
-    help: str | None = None
+    help: Content.ContentType | None = None
     key: str | tuple[str] = field(default_factory=generate_unique_id)
     default: MultiValueParamData | Any | None = None
     value: MultiValueParamData | Any | None = None
@@ -62,6 +64,9 @@ class ArgumentSchema:
     group_weight: int = 0
 
     def __post_init__(self):
+        if self.help and isinstance(self.help, str):
+            self.help = Content.from_markup("$text", text=self.help)
+
         if not isinstance(self.default, MultiValueParamData):
             self.default = MultiValueParamData.process_cli_option(self.default)
 
@@ -112,12 +117,16 @@ class OptionSchema(ArgumentSchema):
 @dataclass
 class CommandSchema:
     name: CommandName
-    docstring: str | None = None
+    docstring: Content.ContentType | None = None
     key: str = field(default_factory=generate_unique_id)
     options: list[OptionSchema] = field(default_factory=list)
     arguments: list[ArgumentSchema] = field(default_factory=list)
     subcommands: dict[CommandName, CommandSchema] = field(default_factory=dict)
     parent: CommandSchema | None = None
+
+    def __post_init__(self) -> None:
+        if self.docstring and isinstance(self.docstring, str):
+            self.docstring = Content.from_markup("$text", text=self.docstring)
 
     @property
     def path_from_root(self) -> list[CommandSchema]:
