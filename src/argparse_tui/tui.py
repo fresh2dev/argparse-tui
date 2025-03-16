@@ -56,6 +56,7 @@ class CommandBuilder(Screen[None]):
         Binding(key="ctrl+s,i,/", action="app.focus('search')", description="Search"),
         Binding(key="f1", action="about", description="About"),
         Binding("q", "exit", show=False),
+        Binding("Q", "exit", show=False),
     ]
 
     def __init__(
