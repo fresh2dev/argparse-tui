@@ -1,6 +1,28 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
-build-backend = "flit_core.buildapi"
+requires = ["hatchling>=1.8.0", "uv-dynamic-versioning>=0.8.0", "hatch-fancy-pypi-readme"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.uv-dynamic-versioning]
+vcs = "git"
+style = "pep440"
+bump = true
+
+[tool.hatch.build.hooks.version]
+path = "src/argparse_tui/_version.py"
+template = '''
+version = "{version}"
+'''
+
+[tool.hatch.build.targets.wheel]
+only-include = ["src"]
+sources = ["src"]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["src"]
+sources = ["src"]
 
 [project]
 name = "argparse-tui"
@@ -25,20 +47,17 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pdbp",
-    # python -m ipykernel install --user --name argparse-tui
-    "ipykernel",
-    "ipywidgets",
-    "ipython",
+    "ipykernel",  # python -m ipykernel install --user --name argparse-tui
 ]
 tests = [
     "pytest==8.*",
     "pytest-env==1.*",
     "pytest-cov==5.*",
-    "pytest-asyncio==0.24.*",
     "pytest-html==4.*",
     "pytest-sugar==1.*",
-    "pytest-markdown-docs==0.6.*",
+    "pytest-markdown-docs==0.7.*",
     "pytest-custom-exit-code==0.3.*",
+    "pytest-asyncio",
     "packaging==23.*",
     "mockish>=0.1.1,<2",
 ]
@@ -50,15 +69,25 @@ default-groups = ["dev", "tests"]
 mockish = { path = "../mockish", editable = true }
 
 [project.urls]
-Homepage = "https://www.f2dv.com/r/argparse-tui"
-Repository = "https://www.github.com/fresh2dev/argparse-tui"
-# Funding = "https://www.f2dv.com/fund"
+Homepage = "https://fresh2.dev/r/argparse-tui"
+Repository = "https://github.com/fresh2dev/argparse-tui"
+# Funding = "https://fresh2.dev/fund"
 
 [tool.pytest.ini_options]
 minversion = 8.0
 testpaths = ["tests"]
 env = [
     "PYTHONBREAKPOINT=pdbp.set_trace",
+]
+
+[tool.docsig]
+check-class = true
+check-dunders = true
+check-overridden = true
+check-protected = true
+disable = [
+    "SIG101",
+    "SIG102",
 ]
 
 [tool.pyright]
@@ -132,17 +161,3 @@ ignore = [
 ]
 # fixable = []
 # unfixable = []
-
-[tool.tox]
-legacy_tox_ini = """
-[tox]
-minversion = 4.0
-[testenv]
-passenv = *
-recreate = true
-# extras = extras
-dependency_groups = tests
-commands =
-    python -m pytest {posargs} --cov=./src --cov-report=term
-    python -m pytest {posargs} --markdown-docs -m markdown-docs --suppress-no-test-exit-code ./src
-"""

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from myke import task
 
 
@@ -5,9 +7,11 @@ from myke import task
 def setup(log_level="info"):
     print(f"Log level: {log_level}")
 
+
 @task
 def hello(name):
     print(f"Hello {name}")
+
 
 @task
 def goodbye(name, formal=False):

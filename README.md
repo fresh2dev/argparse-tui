@@ -1,8 +1,8 @@
 <h1 align="center">argparse-tui</h1>
 <p align="center"><em>Present your Argparse CLI as a Textual UI (TUI).</em></p>
 <h2 align="center">
-<a href="https://www.f2dv.com/r/argparse-tui/" target="_blank">Documentation</a>
-| <a href="https://www.github.com/fresh2dev/argparse-tui/" target="_blank">Git Repo</a>
+<a href="https://fresh2.dev/r/argparse-tui/" target="_blank">Documentation</a>
+| <a href="https://github.com/fresh2dev/argparse-tui/" target="_blank">Git Repo</a>
 </h2>
 
 `argparse-tui` is a Python package that can convert your Argparse CLI into a Textual UI (TUI). It is also able to provide a TUI interface to existing command-line apps using Argparse as a declarative DSL. This library is a soft-fork of [Trogon](https://github.com/Textualize/trogon), powered by the [Textual TUI framework](https://github.com/textualize/textual), refactored for use with Python's native *Argparse*, instead of *Click*.
@@ -101,25 +101,19 @@ pip install argparse-tui
 
 ## Related Projects
 
-- [fresh2dev/TUIview](https://www.f2dv.com/r/tuiview/) is a Python CLI that uses argparse-tui TUIs for existing CLI applications.
+- [fresh2dev/TUIview](https://fresh2.dev/r/tuiview/) is a Python CLI that uses argparse-tui TUIs for existing CLI applications.
 
-- [fresh2dev/yapx](https://www.f2dv.com/r/yapx/) is a Python library for building a Python CLI from your existing Python functions, with `argparse-tui` support built-in.
+- [fresh2dev/yapx](https://fresh2.dev/r/yapx/) is a Python library for building a Python CLI from your existing Python functions, with `argparse-tui` support built-in.
 
-- [fresh2dev/myke](https://www.f2dv.com/r/myke/) is a Python CLI that builds on argparse-tui and Yapx to serve as a task runner with a CLI and TUI interface.
+- [fresh2dev/myke](https://fresh2.dev/r/myke/) is a Python CLI that builds on argparse-tui and Yapx to serve as a task runner with a CLI and TUI interface.
 
 ______________________________________________________________________
 
-[![License](https://img.shields.io/github/license/fresh2dev/argparse-tui?color=blue&style=for-the-badge)](https://www.f2dv.com/r/argparse-tui/license/)
-[![GitHub tag (with filter)](https://img.shields.io/github/v/tag/fresh2dev/argparse-tui?filter=!*%5Ba-z%5D*&style=for-the-badge&label=Release&color=blue)](https://www.f2dv.com/r/argparse-tui/changelog/)
-[![GitHub last commit (branch)](https://img.shields.io/github/last-commit/fresh2dev/argparse-tui/main?style=for-the-badge&label=updated&color=blue)](https://www.f2dv.com/r/argparse-tui/changelog/)
+[![License](https://img.shields.io/github/license/fresh2dev/argparse-tui?color=blue&style=for-the-badge)](https://fresh2.dev/r/argparse-tui/license/)
+[![GitHub tag (with filter)](https://img.shields.io/github/v/tag/fresh2dev/argparse-tui?filter=!*%5Ba-z%5D*&style=for-the-badge&label=Release&color=blue)](https://fresh2.dev/r/argparse-tui/changelog/)
+[![GitHub last commit (branch)](https://img.shields.io/github/last-commit/fresh2dev/argparse-tui/main?style=for-the-badge&label=updated&color=blue)](https://fresh2.dev/r/argparse-tui/changelog/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/fresh2dev/argparse-tui?color=blue&style=for-the-badge)](https://star-history.com/#fresh2dev/argparse-tui&Date)
-
-<!-- [![Funding](https://img.shields.io/badge/funding-%24%24%24-blue?style=for-the-badge)](https://www.f2dv.com/fund/) -->
-
-<!-- [![GitHub issues](https://img.shields.io/github/issues-raw/fresh2dev/argparse-tui?color=blue&style=for-the-badge)](https://www.github.com/fresh2dev/argparse-tui/issues/) -->
-
-<!-- [![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/fresh2dev/argparse-tui?color=blue&style=for-the-badge)](https://www.github.com/fresh2dev/argparse-tui/pulls/) -->
-
+<!-- [![Funding](https://img.shields.io/badge/funding-%24%24%24-blue?style=for-the-badge)](https://fresh2.dev/fund/) -->
+<!-- [![GitHub issues](https://img.shields.io/github/issues-raw/fresh2dev/argparse-tui?color=blue&style=for-the-badge)](https://github.com/fresh2dev/argparse-tui/issues/) -->
+<!-- [![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/fresh2dev/argparse-tui?color=blue&style=for-the-badge)](https://github.com/fresh2dev/argparse-tui/pulls/) -->
 <!-- [![PyPI - Downloads](https://img.shields.io/pypi/dm/argparse-tui?color=blue&style=for-the-badge)](https://pypi.org/project/argparse-tui/) -->
-
-<!-- [![Docker Pulls](https://img.shields.io/docker/pulls/fresh2dev/argparse-tui?color=blue&style=for-the-badge)](https://hub.docker.com/r/fresh2dev/argparse-tui/) -->

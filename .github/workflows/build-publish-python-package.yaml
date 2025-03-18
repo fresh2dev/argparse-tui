@@ -1,0 +1,68 @@
+---
+name: 'Build and Publish Python Package'
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore: ["*"]
+    tags: ["v?[0-9]+.*"]
+  pull_request:
+
+concurrency:
+  # group: build-${{ github.ref }}
+  group: build
+  cancel-in-progress: false
+
+jobs:
+  build-publish:
+    name: build with ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version:
+          - "3.13"
+        os:
+          - ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          lfs: true
+          submodules: true
+          set-safe-directory: true
+
+      - run: >
+          git fetch --prune --tags
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+          python-version: ${{ matrix.python-version }}
+
+      - run: >
+          git log --graph --oneline --decorate
+
+      - run: >
+          uv pip list
+
+      - name: Build the project
+        run: >
+          uv build --link-mode copy --no-sources
+
+      - name: Publish (Test)
+        # env:
+        #   UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TEST_PUBLISH_TOKEN }}
+        run: >
+          uv publish --publish-url 'https://test.pypi.org/legacy/'
+
+      - name: Publish
+        if: >
+          github.ref_type == 'tag'
+        # env:
+        #   UV_PUBLISH_TOKEN: ${{ secrets.PYPI_PUBLISH_TOKEN }}
+        run: >
+          uv publish

@@ -1,0 +1,12 @@
+# Changes here will be overwritten by Copier
+_commit: a8f9ddd
+_src_path: ssh://git@git.local.hostbutter.net/fresh2dev/copier-python-project.git
+docs_engine: mkdocs
+docs_route: /r/argparse-tui
+home_domain: fresh2.dev
+project_description: Present your Argparse CLI as a Textual UI (TUI).
+project_name: argparse-tui
+repo_host: github.com
+repo_owner: fresh2dev
+repo_ssh_url: git@git.local.hostbutter.net:fresh2dev/argparse-tui.git
+template: mkdocs
