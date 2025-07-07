@@ -9,6 +9,7 @@ from rich.text import Text
 from textual import on
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
+from textual.content import Content
 from textual.css.query import NoMatches
 from textual.widget import Widget
 from textual.widgets import (
@@ -68,7 +69,7 @@ class ParameterControls(Widget):
         Returns:
             True if the filter matched (and the widget is visible).
         """
-        help_text = getattr(self.schema, "help", "") or ""
+        help_text: Content.ContentType | None = getattr(self.schema, "help", "") or ""
         if not filter_query:
             should_be_visible = True
             self.display = should_be_visible
@@ -83,7 +84,7 @@ class ParameterControls(Widget):
                 name_contains_query = any(
                     filter_query in name.casefold() for name in self.schema.name
                 )
-                help_contains_query = filter_query in help_text.casefold()
+                help_contains_query = filter_query in str(help_text).casefold()
                 should_be_visible = name_contains_query or help_contains_query
 
             self.display = should_be_visible
@@ -92,7 +93,7 @@ class ParameterControls(Widget):
         if help_text:
             try:
                 help_label = self.query_one(".command-form-control-help-text", Static)
-                new_help_text = Text(help_text)
+                new_help_text = Text(str(help_text))
                 new_help_text.highlight_words(
                     filter_query.split(),
                     "black on yellow",
@@ -116,6 +117,8 @@ class ParameterControls(Widget):
         is_option = isinstance(schema, OptionSchema)
         nargs = schema.nargs
 
+        assert isinstance(argument_type, list)
+
         label = self._make_command_form_control_label(
             name,
             argument_type,
@@ -130,7 +133,7 @@ class ParameterControls(Widget):
         # If there are N defaults, we render the "group" N times.
         # Each group will contain `nargs` widgets.
         with ControlGroupsContainer():
-            if argument_type is not bool:
+            if not any(x is bool for x in argument_type):
                 yield Label(label, classes="command-form-label")
 
             if schema.choices and multiple:

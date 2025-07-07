@@ -36,14 +36,22 @@ def introspect_argparse_parser(
             parent=parent,
         )
 
-        # this is specific to yapx.
+        # This is specific to yapx.
         param_types: dict[str, type[Any]] | None = getattr(parser, "_dest_type", None)
 
-        for param in parser._actions:
-            if isinstance(param, TuiAction) or argparse.SUPPRESS in [
-                param.help,
-                param.default,
-            ]:
+        param_groups: list[tuple[int, str, argparse.Action]] = [
+            (i, (x.title or "Untitled").title(), action)
+            for i, x in enumerate(parser._action_groups)
+            for action in x._group_actions
+        ]
+
+        for i, param_group in enumerate(param_groups):
+            param_group_weight, param_group_title, param = param_group
+
+            if (
+                isinstance(param, (TuiAction, argparse._HelpAction))
+                or param.help is argparse.SUPPRESS
+            ):
                 continue
 
             if isinstance(param, argparse._SubParsersAction):
@@ -65,28 +73,34 @@ def introspect_argparse_parser(
             if param_types:
                 param_type = param_types.get(param.dest, param.type)
 
-            if param_type is None and param.default is not None:
-                param_type = type(param.default)
+            param_default_value: Any = param.default
+            if param_default_value is argparse.SUPPRESS:
+                param_default_value = None
 
+            if param_type is None and param_default_value is not None:
+                param_type = type(param_default_value)
+
+            is_passthru: bool = False
             is_counting: bool = False
             is_multiple: bool = False
             is_flag: bool = False
 
-            opts: list[str] = param.option_strings
+            opts: list[str] = list(param.option_strings)
             secondary_opts: list[str] = []
 
             if isinstance(param, argparse._CountAction):
                 is_counting = True
-            elif isinstance(param, argparse._StoreConstAction):
+            elif isinstance(
+                param,
+                (argparse._StoreConstAction, argparse._VersionAction),
+            ):
                 is_flag = True
-            elif (
-                sys.version_info >= (3, 9)
-                and isinstance(param, argparse.BooleanOptionalAction)
-            ) or type(param).__name__ == "BooleanOptionalAction":
-                # check the type by name, because 'BooleanOptionalAction'
-                # is often manually backported to Python versions < 3.9.
-                if param_type is None:
-                    param_type = bool
+            elif type(param).__name__ == "DummyArgAction":
+                # Dummy args are specific to `yapx`
+                is_passthru = True
+            elif (isinstance(param, argparse.BooleanOptionalAction)) or type(
+                param,
+            ).__name__ == "BooleanOptionalAction":
                 is_flag = True
 
                 if hasattr(param, "_negation_option_strings"):
@@ -102,34 +116,61 @@ def introspect_argparse_parser(
                     ]
                     secondary_opts = [x for x in param.option_strings if x not in opts]
 
+            if is_flag and param_type is None:
+                param_type = bool
+
             nargs: int = (
                 0
-                if param.nargs is None and is_flag
+                if param.nargs in {None, argparse.SUPPRESS} and is_flag
                 else 1
                 if param.nargs is None or param.nargs == "?"
                 else -1
-                if param.nargs in ["+", "*", argparse.REMAINDER]
+                if (
+                    is_passthru
+                    or param.nargs
+                    in {
+                        "+",
+                        "*",
+                        argparse.REMAINDER,
+                        argparse.ONE_OR_MORE,
+                        argparse.ZERO_OR_MORE,
+                    }
+                )
                 else int(param.nargs)
             )
-            multi_value: bool = nargs < 0 or nargs > 1
+            # Does this single parameter accept multiple values?
+            # e.g., `--foo bar baz buz`
+            multi_value: bool = is_passthru or nargs < 0 or nargs > 1
 
+            # Can this parameter be specific multiple times?
+            # e.g., `--foo bar --foo baz --foo buz`
             if isinstance(param, argparse._AppendAction) and nargs <= 1:
                 # TODO: support 'append' action params with nargs > 1.
                 is_multiple = True
 
-            # look for these "tags" in the help text: "secret"
+            # Look for these "tags" in the help text: "secret"
             # if present, set variables and remove from the help text.
             is_secret: bool = False
             param_help: str | None = param.help
             if param_help:
-                param_help = param_help.replace("%(default)s", str(param.default))
+                param_help = param_help.replace(
+                    "%(default)s",
+                    str(param_default_value),
+                )
                 is_secret = "<secret>" in param_help
 
             is_required: bool = (
                 param.required
-                and param.default is None
-                and param.nargs not in ["?", "*", argparse.REMAINDER]
+                and param_default_value is None
+                and param.nargs
+                not in {"?", "*", argparse.REMAINDER, argparse.ZERO_OR_MORE}
                 and nargs != 0
+            )
+
+            param_value = (
+                value_overrides.pop("__unknown_args__", None)
+                if is_passthru
+                else value_overrides.pop(param.dest, None)
             )
 
             if param.option_strings:
@@ -140,14 +181,17 @@ def introspect_argparse_parser(
                     counting=is_counting,
                     secondary_opts=secondary_opts,
                     required=is_required,
-                    default=param.default,
-                    value=value_overrides.get(param.dest),
+                    default=param_default_value,
+                    value=param_value,
                     help=param_help,
                     choices=param.choices,
                     multiple=is_multiple,
                     multi_value=multi_value,
                     nargs=nargs,
                     secret=is_secret,
+                    weight=i,
+                    group_title=param_group_title,
+                    group_weight=param_group_weight,
                 )
                 cmd_data.options.append(option_data)
 
@@ -156,14 +200,17 @@ def introspect_argparse_parser(
                     name=param.dest,
                     type=param_type,
                     required=is_required,
-                    default=param.default,
-                    value=value_overrides.get(param.dest),
+                    default=param_default_value,
+                    value=param_value,
                     help=param_help,
                     choices=param.choices,
                     multiple=is_multiple,
                     multi_value=multi_value,
                     nargs=nargs,
                     secret=is_secret,
+                    weight=i,
+                    group_title=param_group_title,
+                    group_weight=param_group_weight,
                 )
                 cmd_data.arguments.append(argument_data)
 
@@ -185,13 +232,17 @@ def build_tui(
 ) -> App:
     """Build a Textual UI (TUI) given an argparse parser.
 
+    Creates a Textual App that presents a form-based interface for the given
+    argparse parser. The TUI allows users to interactively set argument values
+    through a user-friendly interface instead of command line flags.
+
     Args:
-        parser: ...
-        cli_args: Arguments parsed for pre-populating the TUI form.
-        subparser_ignorelist: ...
+        parser: The argparse parser to build a TUI for
+        cli_args: Arguments parsed for pre-populating the TUI form fields
+        subparser_ignorelist: List of subparsers to exclude from the TUI
 
     Returns:
-        a Textualize App
+        A Textual App instance
 
     Examples:
     ```python
@@ -210,8 +261,8 @@ def build_tui(
     ```
     """
 
-    subcmd_args: list[str]
-    parsed_args: dict[str, str]
+    subcmd_args: list[str] = []
+    parsed_args: dict[str, str] = {}
 
     if cli_args:
         # Make all args optional
@@ -260,11 +311,9 @@ def build_tui(
         )
 
         with suppress(SystemExit):
-            namespace, _unknown_args = parser_copy.parse_known_args(cli_args)
-            parsed_args = vars(namespace)
-    else:
-        subcmd_args = []
-        parsed_args = {}
+            namespace, unknown_args = parser_copy.parse_known_args(cli_args)
+            parsed_args: dict[str, str | list[str]] = vars(namespace)
+            parsed_args["__unknown_args__"] = unknown_args
 
     schemas = introspect_argparse_parser(
         parser,
@@ -282,10 +331,13 @@ def invoke_tui(
 ) -> None:
     """Invoke a Textual UI (TUI) given an argparse parser.
 
+    Builds and runs a TUI for the given argparse parser. This is a convenience
+    function that combines build_tui() and app.run() in one call.
+
     Args:
-        parser: ...
-        cli_args: Arguments parsed for pre-populating the TUI form.
-        subparser_ignorelist: ...
+        parser: The argparse parser to create a TUI for
+        cli_args: Arguments parsed for pre-populating the TUI form fields
+        subparser_ignorelist: List of subparsers to exclude from the TUI
 
     Examples:
     ```python
@@ -310,14 +362,18 @@ def invoke_tui(
 class TuiAction(argparse.Action):
     """argparse `Action` that will analyze the parser and display a TUI.
 
+    When this action is triggered during argument parsing, it will
+    launch a Textual UI for the parser. This allows adding a '--tui'
+    flag to any argparse-based CLI to provide an interactive interface.
+
     Args:
-        option_strings: ...
-        dest: ...
-        default: ...
-        help: ...
-        const: ...
-        metavar: ...
-        parent_parser: ...
+        option_strings: The command-line flags that trigger this action
+        dest: The attribute name to store the result in
+        default: The default value if the argument is not present
+        help: The help text for this argument
+        const: The constant value for this action
+        metavar: The name to use in usage messages
+        parent_parser: The parent parser if this is in a subparser
 
     Examples:
     ```python
@@ -389,15 +445,18 @@ def add_tui_argument(
     default=argparse.SUPPRESS,
     **kwargs,
 ) -> None:
-    """
+    """Add a TUI argument to an existing argparse parser.
+
+    This function adds a flag (like --tui) to the parser that, when specified,
+    will launch a Textual UI for configuring the command arguments.
 
     Args:
-        parser: the argparse parser to add the argument to.
-        parent_parser: the parent of the given parser.
-        option_strings: list of CLI flags that will invoke the TUI
-        help: ...
-        default: ...
-        **kwargs: passed to `parser.add_argument(...)`
+        parser: The argparse parser to add the argument to
+        parent_parser: The parent of the given parser, if this is a subparser
+        option_strings: List of CLI flags that will invoke the TUI (default: --tui)
+        help: Help text for the TUI argument
+        default: Default value for the argument
+        **kwargs: Additional keyword arguments passed to `parser.add_argument(...)`
 
     Examples:
     ```python
@@ -430,16 +489,20 @@ def add_tui_command(
     help: str = "Open Textual UI.",  # pylint: disable=redefined-builtin # noqa: A002
     **kwargs: Any,
 ) -> argparse._SubParsersAction:
-    """
+    """Add a TUI subcommand to an existing argparse parser.
+
+    This function adds a subcommand (like 'tui') to the parser that, when invoked,
+    will launch a Textual UI for configuring the command arguments. This is useful
+    for CLI applications that want to offer both command-line and TUI interfaces.
 
     Args:
-        parser: the argparse parser
-        command: name of the CLI command that will invoke the TUI (default=`tui`)
-        help: help message for the argument
-        **kwargs: if subparsers do not already exist, create with these kwargs.
+        parser: The argparse parser to add the subcommand to
+        command: Name of the CLI command that will invoke the TUI (default=`tui`)
+        help: Help message for the subcommand
+        **kwargs: If subparsers do not already exist, create with these kwargs
 
     Returns:
-        The Argparse subparsers action that was discovered or created.
+        The Argparse subparsers action that was discovered or created
 
     Examples:
     ```python

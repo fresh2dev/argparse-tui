@@ -1,34 +1,50 @@
 ---
 repos:
-  - repo: 'https://github.com/pre-commit/pre-commit-hooks'
-    rev: 'v4.5.0'
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
     hooks:
-      - id: 'check-added-large-files'
-      - id: 'check-executables-have-shebangs'
+      - id: check-added-large-files
+      - id: check-executables-have-shebangs
       # - id: check-json
-      - id: 'check-shebang-scripts-are-executable'
-      - id: 'check-merge-conflict'
-      - id: 'check-symlinks'
-      - id: 'check-toml'
-      - id: 'end-of-file-fixer'
-      - id: 'mixed-line-ending'
-      - id: 'trailing-whitespace'
-  # - repo: 'https://github.com/scop/pre-commit-shfmt'
-  #   rev: 'v3.8.0-1'
-  #   hooks:
-  #     - id: 'shfmt'
-  #       args: ['-w', '-s', '-i', '2']
-  # - id: 'myke-py-format'
-  #   name: 'myke py format'
-  #   entry: 'myke py format'
-  #   description: 'Format Python project.'
-  #   language: 'python'
-  #   types: ['python']
-  #   pass_filenames: false
-  # - id: 'myke-py-check'
-  #   name: 'myke py check --critical'
-  #   entry: 'myke py check --critical'
-  #   description: 'Check Python project for critical errors.'
-  #   language: 'python'
-  #   types: ['python']
-  #   pass_filenames: false
+      - id: check-shebang-scripts-are-executable
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-toml
+      - id: debug-statements
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+    - id: ruff-format
+      name: Ruff format
+      language: system
+      types: [python]
+      # pass_filenames: false
+      entry: >
+        uvx ruff format
+
+    - id: pylint
+      name: Pylint
+      language: system
+      types: [python]
+      pass_filenames: false
+      entry: >
+        uvx --with pylint-venv pylint --init-hook='import pylint_venv; pylint_venv.inithook(force_venv_activation=True)' --disable=R,C,W0511 ./src
+
+    - id: docsig
+      name: Lint Docstrings
+      language: system
+      types: [python]
+      pass_filenames: false
+      entry: >
+        uvx docsig ./src
+
+    # - id: pyrefly
+    #   name: Check Types
+    #   language: system
+    #   types: [python]
+    #   pass_filenames: false
+    #   entry: >
+    #       uvx pyrefly check --output-format min-text ./src

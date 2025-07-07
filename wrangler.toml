@@ -1,0 +1,13 @@
+name = "argparse-tui"
+compatibility_date = "2025-06-28"
+workers_dev = false
+preview_urls = true
+
+routes = [
+  # https://developers.cloudflare.com/workers/configuration/routing/routes/
+  # https://developers.cloudflare.com/workers/configuration/routing/custom-domains/
+  { pattern = "fresh2.dev/r/argparse-tui*", zone_name = 'fresh2.dev' },
+]
+
+[assets]
+not_found_handling = "404-page"

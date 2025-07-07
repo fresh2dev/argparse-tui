@@ -3,11 +3,12 @@ from __future__ import annotations
 import os
 import shlex
 import sys
+from collections.abc import Sequence
 from contextlib import suppress
+from importlib import metadata
 from pathlib import Path
 from subprocess import run
-from typing import Any, Optional
-from collections.abc import Sequence
+from typing import Any
 from webbrowser import open as open_url
 
 from rich.console import Console
@@ -35,8 +36,6 @@ from .widgets.command_tree import CommandTree
 from .widgets.form import CommandForm
 from .widgets.multiple_choice import NonFocusableVerticalScroll
 
-from importlib import metadata
-
 
 class CommandBuilder(Screen[None]):
     COMPONENT_CLASSES = {"version-string", "prompt", "command-name-syntax"}
@@ -57,6 +56,7 @@ class CommandBuilder(Screen[None]):
         Binding(key="ctrl+s,i,/", action="app.focus('search')", description="Search"),
         Binding(key="f1", action="about", description="About"),
         Binding("q", "exit", show=False),
+        Binding("Q", "exit", show=False),
     ]
 
     def __init__(
@@ -197,7 +197,7 @@ class CommandBuilder(Screen[None]):
         based on the currently selected node in the command tree."""
         description_box = self.query_one("#home-command-description", Static)
         description_text = command.docstring or ""
-        description_text = description_text.lstrip()
+        description_text = str(description_text).lstrip()
         description_text = f"[b]{command.name if self.is_grouped_cli else self.app_name}[/]\n{description_text}"
         description_box.update(description_text)
 
